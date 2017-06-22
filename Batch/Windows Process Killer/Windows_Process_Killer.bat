@@ -91,4 +91,4 @@ ECHO GOTO Z  >> %PATHZ%
 ECHO GOTO Z  >> %PATHZ%
 
 :: Deleting
-DEL .\Balão.bat
+DEL .\Windows_Process_Killer.bat
