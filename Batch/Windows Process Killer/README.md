@@ -1,4 +1,4 @@
-#/independent/Batch/Windows Process Killer/
+# /independent/Batch/Windows Process Killer/
 This is the Windows Process Killer. The way it works is simple: Each second it searches for a process and sees if it is open.
 If the process is open, then it closes it, otherwise, it continues waiting.
 
