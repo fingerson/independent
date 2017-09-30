@@ -5,7 +5,38 @@
 
 #include <iostream>
 
-/* NODE CLASS DECLARATION */
+/* FORWARD DECLARATIONS */
+
+// Classes
+template <class T>
+class Node;
+template <class T>
+class RList;
+template <class T>
+class List;
+
+// Functions
+template <class T>
+std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed);
+
+template <class T>
+T foldl(T (*f)(T, T), T x, const RList<T> &list_to_be_folded);
+
+template <class T>
+T foldr(T (*f)(T, T), T x, const RList<T> &list_to_be_folded);
+
+template <class T>
+T head(const RList<T> &list_to_be_headed);
+
+template <class T>
+RList<T> filter(bool (*f)(T), const RList<T> &list_to_be_filtered);
+
+template <class T>
+RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped);
+
+// --------------------------------------------------------------------
+/* CLASS DECLARATIONS */
+// Node
 template <class T>
 class Node{
 public:
@@ -13,18 +44,10 @@ public:
         Node<T>* next_node;
 
         Node <T> ();
+	friend class RList<T>;
 };
 
-// Node Constructor()
-template <class T>
-Node<T>::Node(){
-        hold = 0;
-        next_node = NULL;
-}
-
-/*------------------------*/
-
-/* RLIST CLASS DECLARATION */
+// RList
 template <class T>
 class RList{
 
@@ -103,19 +126,7 @@ public:
         void switch_holds(int pos1, int pos2);
 };
 
-// RList Constructor()
-template <class T>
-RList<T>::RList(){
-        first_node = NULL;
-}
-
-// RList Destructor
-template <class T>
-RList<T>::~RList(){}
-
-/*------------------------*/
-
-/* LIST CLASS DECLARATION */
+// List
 template <class T>
 class List : public RList<T>
 {
@@ -142,39 +153,30 @@ public:
         RList<T> operator+(const List<T> &list_to_be_appended);
 };
 
-// List Destructor
+// --------------------------------------------------------------------
+/* NODE FUNCTIONS */
+// Node Constructor()
 template <class T>
-List<T>::~List()
-{
-        RList<T>::delete_all();
+Node<T>::Node(){
+        hold = 0;
+        next_node = NULL;
 }
 
-/*------------------------*/
-
-// ---- FUNCTIONS NOT IN CLASS ---------------------------------------
+/*RLIST FUNCTIONS*/
+// RList Constructor()
 template <class T>
-std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed);
+RList<T>::RList(){
+        first_node = NULL;
+}
 
-// -------------------------------------------------------------------
+// RList Destructor
 template <class T>
-T foldl(T (*f)(T, T), T x, const RList<T> &list_to_be_folded);
+RList<T>::~RList(){
+        //delete_all();
+}
 
-template <class T>
-T foldr(T (*f)(T, T), T x, const RList<T> &list_to_be_folded);
+// --------------------------------------------------------------------
 
-template <class T>
-T head(const RList<T> &list_to_be_headed);
-
-// ------------------------------------------------------------------
-template <class T>
-RList<T> filter(bool (*f)(T), const RList<T> &list_to_be_filtered);
-
-template <class T>
-RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped);
-
-// ---- /FUNCTIONS NOT IN CLASS --------------------------------------
-
-// ----- CLASS FUNCTIONS ---------------------------------------------
 // Operator == Overload
 template <class T>
 bool RList<T>::operator==(const RList<T> &list_to_be_compared){
@@ -642,10 +644,105 @@ void RList<T>::switch_holds(int pos1, int pos2){
         }
 }
 
-// ----- /CLASS FUNCTIONS ---------------------------------------------
+// --------------------------------------------------------------------
+/* LIST CLASS FUNCTIONS */
+
+// List Class Operators
+
+// List Destructor
+template <class T>
+List<T>::~List()
+{
+        RList<T>::delete_all();
+}
+
+// Operator == Overload
+template <class T>
+bool List<T>::operator==(const List<T> &list_to_be_compared){
+        int this_length = this->length();
+        if(this_length != list_to_be_compared.length())
+        {
+                return false;
+        }
+        else
+        {
+                bool is_equal = true;
+                for(int i = 0; i < this_length && is_equal; i++)
+                {
+                        is_equal = (this->value_at(i) != list_to_be_compared.value_at(i));
+
+                }
+                return is_equal;
+        }
+}
+
+// Operator != Overload
+template <class T>
+bool List<T>::operator!=(const List<T> &list_to_be_compared){
+        return !(*this == list_to_be_compared);
+}
+
+// Operator > Overload
+template <class T>
+bool List<T>::operator>(const List<T> &list_to_be_compared){
+        return this->length() > list_to_be_compared.length();
+}
+
+// Operator >= Overload
+template <class T>
+bool List<T>::operator>=(const List<T> &list_to_be_compared){
+        return this->length() >= list_to_be_compared.length();
+}
+
+// Operator < Overload
+template <class T>
+bool List<T>::operator<(const List<T> &list_to_be_compared){
+        return this->length() < list_to_be_compared.length();
+}
+
+// Operator <= Overload
+template <class T>
+bool List<T>::operator<=(const List<T> &list_to_be_compared){
+        return this->length() <= list_to_be_compared.length();
+}
+
+// Operator = Overload
+template <class T>
+void List<T>::operator=(const List<T> &list_to_be_copied){
+        this->copy_list(list_to_be_copied);
+}
+
+// Operator = Overload for RList assignments
+template <class T>
+void List<T>::operator=(const RList<T> &list_to_be_copied){
+        this->copy_list(list_to_be_copied);
+}
+
+// Operator += Overload
+template <class T>
+void List<T>::operator+=(const List<T> &list_to_be_appended){
+        this->append_list(list_to_be_appended);
+}
+
+// Operator + Overload
+template <class T>
+RList<T> List<T>::operator+(const List<T> &list_to_be_appended){
+        RList<T> return_list;
+        for(int i = 0; i < this->length(); i++)
+        {
+                return_list.append(this->value_at(i));
+        }
+
+        for(int i = 0; i < list_to_be_appended.length(); i++)
+        {
+                return_list.append(list_to_be_appended.value_at(i));
+        }
+
+        return return_list;
+}
 
 // --------------------------------------------------------------------
-// (NOT FROM LIST CLASS)
+/* FUNCTIONS OUTSIDE OF CLASSES */
 // Operator << Overload
 template <class T>
 std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed){
@@ -746,93 +843,6 @@ RList<T> tail(const RList<T> &list_to_be_tailed)
         {
                 throw std::domain_error("ERROR: Tail is not defined for empty lists.\n");
         }
-}
-
-
-// List Class Operators
-// Operator == Overload
-template <class T>
-bool List<T>::operator==(const List<T> &list_to_be_compared){
-        int this_length = this->length();
-        if(this_length != list_to_be_compared.length())
-        {
-                return false;
-        }
-        else
-        {
-                bool is_equal = true;
-                for(int i = 0; i < this_length && is_equal; i++)
-                {
-                        is_equal = (this->value_at(i) != list_to_be_compared.value_at(i));
-
-                }
-                return is_equal;
-        }
-}
-
-// Operator != Overload
-template <class T>
-bool List<T>::operator!=(const List<T> &list_to_be_compared){
-        return !(*this == list_to_be_compared);
-}
-
-// Operator > Overload
-template <class T>
-bool List<T>::operator>(const List<T> &list_to_be_compared){
-        return this->length() > list_to_be_compared.length();
-}
-
-// Operator >= Overload
-template <class T>
-bool List<T>::operator>=(const List<T> &list_to_be_compared){
-        return this->length() >= list_to_be_compared.length();
-}
-
-// Operator < Overload
-template <class T>
-bool List<T>::operator<(const List<T> &list_to_be_compared){
-        return this->length() < list_to_be_compared.length();
-}
-
-// Operator <= Overload
-template <class T>
-bool List<T>::operator<=(const List<T> &list_to_be_compared){
-        return this->length() <= list_to_be_compared.length();
-}
-
-// Operator = Overload
-template <class T>
-void List<T>::operator=(const List<T> &list_to_be_copied){
-        this->copy_list(list_to_be_copied);
-}
-
-// Operator = Overload for RList assignments
-template <class T>
-void List<T>::operator=(const RList<T> &list_to_be_copied){
-        this->copy_list(list_to_be_copied);
-}
-
-// Operator += Overload
-template <class T>
-void List<T>::operator+=(const List<T> &list_to_be_appended){
-        this->append_list(list_to_be_appended);
-}
-
-// Operator + Overload
-template <class T>
-RList<T> List<T>::operator+(const List<T> &list_to_be_appended){
-        RList<T> return_list;
-        for(int i = 0; i < this->length(); i++)
-        {
-                return_list.append(this->value_at(i));
-        }
-
-        for(int i = 0; i < list_to_be_appended.length(); i++)
-        {
-                return_list.append(list_to_be_appended.value_at(i));
-        }
-
-        return return_list;
 }
 
 
