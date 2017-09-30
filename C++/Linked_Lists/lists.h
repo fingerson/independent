@@ -38,7 +38,6 @@ public:
         ~List();
 
 // Operator overloads
-
         bool operator==(const List<T> &list_to_be_compared);
 
         bool operator!=(const List<T> &list_to_be_compared);
@@ -59,10 +58,6 @@ public:
 
 
 // T-type functions
-        T foldl(T (*f)(T, T), T x);
-
-        T foldr(T (*f)(T, T), T x);
-
         T value_at(int position);
 
         T value_at(int position) const;
@@ -96,10 +91,6 @@ public:
 
         void delete_at(int position);
 
-        void filter(bool (*f)(T));
-
-        void map_on(T (*f)(T));
-
         void prune_at(int position);
 
         void prune_from_to(int prune_start, int prune_end);
@@ -107,7 +98,27 @@ public:
         void switch_holds(int pos1, int pos2);
 };
 
+// ---- FUNCTIONS NOT IN CLASS ---------------------------------------
+template <class T>
+std::ostream& operator<<(std::ostream& os, const List<T> &list_to_be_outputed);
+
 // -------------------------------------------------------------------
+template <class T>
+T foldl(T (*f)(T, T), T x, const List<T> &list_to_be_folded);
+
+template <class T>
+T foldr(T (*f)(T, T), T x, const List<T> &list_to_be_folded);
+
+// ------------------------------------------------------------------
+template <class T>
+List<T> filter(bool (*f)(T), const List<T> &list_to_be_filtered);
+
+template <class T>
+List<T> map_on(T (*f)(T), const List<T> &list_to_be_mapped);
+
+// ---- /FUNCTIONS NOT IN CLASS --------------------------------------
+
+// ----- CLASS FUNCTIONS ---------------------------------------------
 // List Constructor()
 template <class T>
 List<T>::List(){
@@ -121,16 +132,6 @@ List<T>::~List(){
 }
 
 // -------------------------------------------------------------------
-// (NOT FROM LIST CLASS) Operator << Overload
-template <class T>
-std::ostream& operator<<(std::ostream& os, const List<T> &list_to_be_outputed){
-        for(int i = 0; i < list_to_be_outputed.length(); i++)
-        {
-                os << list_to_be_outputed.value_at(i);
-        }
-        return os;
-}
-
 // Operator == Overload
 template <class T>
 bool List<T>::operator==(const List<T> &list_to_be_compared){
@@ -208,39 +209,6 @@ List<T> List<T>::operator+(const List<T> &list_to_be_appended){
         return return_list;
 }
 // --------------------------------------------------------------------
-// foldl
-template <class T>
-T List<T>::foldl(T (*f)(T, T), T x){
-        int i = length();
-        if(i == 0)
-        {
-                return x;
-        }
-        T first_iteration = f(x, value_at(1));
-        for(int j = 2; j < i; j++)
-        {
-                first_iteration = f(first_iteration, value_at(j));
-        }
-        return first_iteration;
-
-}
-
-// foldr
-template <class T>
-T List<T>::foldr(T (*f)(T, T), T x){
-        int i = length() - 2;
-        if(i == -2)
-        {
-                return x;
-        }
-        T first_iteration = f(value_at(i+1), x);
-        for(; i >= 0; i--)
-        {
-                first_iteration = f(value_at(i), first_iteration);
-        }
-        return first_iteration;
-}
-
 // value_at
 template <class T>
 T List<T>::value_at(int position){
@@ -480,33 +448,6 @@ void List<T>::delete_at(int position){
         }
 }
 
-// filter
-template <class T>
-void List<T>::filter(bool (*f)(T)){
-        int number_of_elements = length();
-        int analised_position = 0;
-        for(int i = 0; i < number_of_elements; i++)
-        {
-                if(f(value_at(analised_position)))
-                {
-                        analised_position++;
-                }
-                else
-                {
-                        delete_at(analised_position);
-                }
-        }
-}
-
-// map_on
-template <class T>
-void List<T>::map_on(T (*f)(T)){
-        for(int i = 0; i < length(); i++)
-        {
-                assign_at(i, f(value_at(i)));
-        }
-}
-
 // prune_at
 template <class T>
 void List<T>::prune_at(int position){
@@ -564,5 +505,82 @@ void List<T>::switch_holds(int pos1, int pos2){
                 }
         }
 }
+
+// ----- /CLASS FUNCTIONS ---------------------------------------------
+
+// --------------------------------------------------------------------
+// (NOT FROM LIST CLASS)
+// Operator << Overload
+template <class T>
+std::ostream& operator<<(std::ostream& os, const List<T> &list_to_be_outputed){
+        for(int i = 0; i < list_to_be_outputed.length(); i++)
+        {
+                os << list_to_be_outputed.value_at(i);
+        }
+        return os;
+}
+
+// --------------------------------------------------------------------
+// foldl
+template <class T>
+T foldl(T (*f)(T, T), T x, const List<T> &list_to_be_folded){
+        int i = list_to_be_folded.length();
+        if(i == 0)
+        {
+                return x;
+        }
+        T first_iteration = f(x, list_to_be_folded.value_at(1));
+        for(int j = 2; j < i; j++)
+        {
+                first_iteration = f(first_iteration, list_to_be_folded.value_at(j));
+        }
+        return first_iteration;
+
+}
+
+// foldr
+template <class T>
+T foldr(T (*f)(T, T), T x, const List<T> &list_to_be_folded){
+        int i = list_to_be_folded.length() - 2;
+        if(i == -2)
+        {
+                return x;
+        }
+        T first_iteration = f(list_to_be_folded.value_at(i+1), x);
+        for(; i >= 0; i--)
+        {
+                first_iteration = f(list_to_be_folded.value_at(i), first_iteration);
+        }
+        return first_iteration;
+}
+
+// --------------------------------------------------------------------
+
+// filter
+template <class T>
+List<T> filter(bool (*f)(T), const List<T> &list_to_be_filtered){
+        List<T> return_list;
+        int number_of_elements = list_to_be_filtered.length();
+        for(int i = 0; i < number_of_elements; i++)
+        {
+                if(f(list_to_be_filtered.value_at(i)))
+                {
+                        return_list.append(list_to_be_filtered.value_at(i));
+                }
+        }
+        return return_list;
+}
+
+// map_on
+template <class T>
+List<T> map_on(T (*f)(T), const List<T> &list_to_be_mapped){
+        List<T> return_list;
+        for(int i = 0; i < list_to_be_mapped.length(); i++)
+        {
+                return_list.append(f(list_to_be_mapped.value_at(i)));
+        }
+        return return_list;
+}
+
 
 #endif // LISTS_H
