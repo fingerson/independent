@@ -26,7 +26,7 @@ Node<T>::Node(){
 
 /* RLIST CLASS DECLARATION */
 template <class T>
-class RList : private Node <T>{
+class RList{
 
 protected:
         Node <T>* first_node;
@@ -111,9 +111,7 @@ RList<T>::RList(){
 
 // RList Destructor
 template <class T>
-RList<T>::~RList(){
-        //delete_all();
-}
+RList<T>::~RList(){}
 
 /*------------------------*/
 
