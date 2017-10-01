@@ -8,16 +8,25 @@
 /* FORWARD DECLARATIONS */
 
 // Classes
-template <class T>
-class Node;
+
 template <class T>
 class RList;
 template <class T>
+class Node;
+template <class T>
 class List;
+template <class T, class S>
+class Tuple;
 
 // Functions
 template <class T>
 std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed);
+
+template <>
+std::ostream& operator<<(std::ostream& os, const RList<char> &list_to_be_outputed);
+
+template <class T, class S>
+std::ostream& operator<<(std::ostream& os, const Tuple<T,S> &output_tuple);
 
 template <class T>
 T foldl(T (*f)(T, T), T x, const RList<T> &list_to_be_folded);
@@ -32,24 +41,40 @@ template <class T>
 RList<T> filter(bool (*f)(T), const RList<T> &list_to_be_filtered);
 
 template <class T>
+RList<T> init(const RList<T> &list_to_be_inited);
+
+template <class T>
 RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped);
+
+template <class T>
+RList<T> reverse_list(const RList<T> list_to_be_reverted);
+
+template <class T, class S>
+RList< Tuple<T,S> > zip(const RList<T> &list_1, const RList<S> &list_2);
 
 // --------------------------------------------------------------------
 /* CLASS DECLARATIONS */
-// Node
-template <class T>
-class Node{
-public:
-        T hold;
-        Node<T>* next_node;
-
-        Node <T> ();
-	friend class RList<T>;
-};
 
 // RList
 template <class T>
 class RList{
+
+private:
+        // Node
+        template <typename S>
+        class Node{
+        public:
+                S hold;
+                Node<S>* next_node;
+
+                // Node Constructor
+                Node()
+                {
+                        hold = S();
+                        next_node = NULL;
+                }
+        };
+
 
 protected:
         Node <T>* first_node;
@@ -57,9 +82,6 @@ protected:
 public:
 // Constructors
         RList();
-
-// Deconstructor
-        ~RList();
 
 // Operator overloads
         bool operator==(const RList<T> &list_to_be_compared);
@@ -128,8 +150,7 @@ public:
 
 // List
 template <class T>
-class List : public RList<T>
-{
+class List : public RList<T>{
 public:
         ~List();
         bool operator==(const List<T> &list_to_be_compared);
@@ -153,26 +174,46 @@ public:
         RList<T> operator+(const List<T> &list_to_be_appended);
 };
 
+// Tuple
+template <class T, class S>
+class Tuple{
+private:
+        T left_elem;
+        S right_elem;
+
+public:
+
+// Constructors
+        Tuple();
+
+        Tuple(T left, S right);
+
+// Operators
+        bool operator==(const Tuple<T,S> &compare_tuple);
+        bool operator!=(const Tuple<T,S> &compare_tuple);
+
+        void operator=(const Tuple<T,S> &assign_tuple);
+
+// T and S functions
+
+        T left();
+
+        T left() const;
+
+        S right();
+
+        S right() const;
+
+
+};
+
 // --------------------------------------------------------------------
-/* NODE FUNCTIONS */
-// Node Constructor()
-template <class T>
-Node<T>::Node(){
-        hold = 0;
-        next_node = NULL;
-}
 
 /*RLIST FUNCTIONS*/
 // RList Constructor()
 template <class T>
 RList<T>::RList(){
         first_node = NULL;
-}
-
-// RList Destructor
-template <class T>
-RList<T>::~RList(){
-        //delete_all();
 }
 
 // --------------------------------------------------------------------
@@ -651,8 +692,7 @@ void RList<T>::switch_holds(int pos1, int pos2){
 
 // List Destructor
 template <class T>
-List<T>::~List()
-{
+List<T>::~List(){
         RList<T>::delete_all();
 }
 
@@ -742,14 +782,121 @@ RList<T> List<T>::operator+(const List<T> &list_to_be_appended){
 }
 
 // --------------------------------------------------------------------
+/* TUPLE CLASS FUNCTIONS */
+
+// Tuple Constructor()
+template <class T, class S>
+Tuple<T,S>::Tuple(){
+        right_elem = S();
+        left_elem  = T();
+}
+
+// Tuple Constructor (T,S)
+template <class T, class S>
+Tuple<T,S>::Tuple(T left, S right){
+        right_elem = right;
+        left_elem = left;
+}
+
+// --------------------------------------------------------------------
+
+template <class T, class S>
+bool Tuple<T,S>::operator==(const Tuple<T,S> &compare_tuple){
+        if(this->left_elem == compare_tuple.left())
+        {
+               if(this->right_elem == compare_tuple.right)
+               {
+                       return true;
+               }
+               else
+               {
+                       return false;
+               }
+        }
+        else
+        {
+                return false;
+        }
+}
+
+template <class T, class S>
+bool Tuple<T,S>::operator!=(const Tuple<T,S> &compare_tuple){
+        return !(*this == compare_tuple);
+}
+
+template <class T, class S>
+void Tuple<T,S>::operator=(const Tuple<T,S> &assign_tuple){
+        this->left_elem = assign_tuple.left();
+        this->right_elem = assign_tuple.right();
+}
+
+// --------------------------------------------------------------------
+
+// left
+template <class T, class S>
+T Tuple<T,S>::left(){
+        return left_elem;
+}
+
+// left const
+template <class T, class S>
+T Tuple<T,S>::left() const {
+        return left_elem;
+}
+
+// right
+template <class T, class S>
+S Tuple<T,S>::right(){
+        return right_elem;
+}
+
+// right const
+template <class T, class S>
+S Tuple<T,S>::right() const{
+        return right_elem;
+}
+
+// --------------------------------------------------------------------
 /* FUNCTIONS OUTSIDE OF CLASSES */
-// Operator << Overload
+
+// Operator << Overload for RLists
 template <class T>
 std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed){
-        for(int i = 0; i < list_to_be_outputed.length(); i++)
+        os << "[";
+        int list_length = list_to_be_outputed.length();
+        for(int i = 0; i < list_length-1; i++)
+        {
+                os << list_to_be_outputed.value_at(i);
+                os << ",";
+        }
+        if(list_length != 0)
+        {
+                os << list_to_be_outputed.value_at(list_length - 1);
+        }
+        os << "]";
+        return os;
+}
+
+// Operator << Overload for RLists char specialization
+template <>
+std::ostream& operator<<(std::ostream& os, const RList<char> &list_to_be_outputed){
+        os << "[";
+        int list_length = list_to_be_outputed.length();
+        for(int i = 0; i < list_length; i++)
         {
                 os << list_to_be_outputed.value_at(i);
         }
+        return os;
+}
+
+// Operator << Overload for Tuples
+template <class T, class S>
+std::ostream& operator<<(std::ostream& os, const Tuple<T,S> &output_tuple){
+        os << "(";
+        os << output_tuple.left();
+        os << ",";
+        os << output_tuple.right();
+        os << ")";
         return os;
 }
 
@@ -817,6 +964,15 @@ RList<T> filter(bool (*f)(T), const RList<T> &list_to_be_filtered){
         return return_list;
 }
 
+// init
+template <class T>
+RList<T> init(const RList<T> &list_to_be_inited){
+        RList<T> return_list;
+        return_list = list_to_be_inited;
+        return_list.delete_at(return_list.length() - 1);
+        return return_list;
+}
+
 // map_on
 template <class T>
 RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped){
@@ -828,10 +984,21 @@ RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped){
         return return_list;
 }
 
+// reverse_list
+template <class T>
+RList<T> reverse_list(const RList<T> list_to_be_reverted){
+        RList<T> return_list;
+        int list_length = list_to_be_reverted.length();
+        for(int i = 0; i < list_length; i++)
+        {
+                return_list.append(list_to_be_reverted.value_at(list_length -1 -i));
+        }
+        return return_list;
+}
+
 // tail
 template <class T>
-RList<T> tail(const RList<T> &list_to_be_tailed)
-{
+RList<T> tail(const RList<T> &list_to_be_tailed){
         if(list_to_be_tailed.has_elements())
         {
                 RList<T> return_list;
@@ -845,5 +1012,25 @@ RList<T> tail(const RList<T> &list_to_be_tailed)
         }
 }
 
+// zip
+template <class T, class S>
+RList< Tuple<T,S> > zip(const RList<T> &list_1, const RList<S> &list_2){
+        RList< Tuple<T,S> > return_list;
+        Tuple<T,S> return_tuple;
+
+        int list_length = int();
+        {
+                int length1 = list_1.length();
+                int length2 = list_2.length();
+                list_length = length1 < length2 ? length1 : length2;
+        }
+
+        for(int i = 0; i < list_length; i++){
+                return_tuple = Tuple<T,S>(list_1.value_at(i), list_2.value_at(i));
+                return_list.append(return_tuple);
+        }
+
+        return return_list;
+}
 
 #endif // LISTS_H
