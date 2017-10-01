@@ -100,10 +100,20 @@ public:
 
         void operator+=(const RList<T> &list_to_be_appended);
 
+        void operator+=(T element);
+
         RList<T> operator+(const RList<T> &list_to_be_appended);
+
+        RList<T> operator+(T element);
 
 
 // T-type functions
+        T peek();
+
+        T peek() const;
+
+        T pop();
+
         T value_at(int position);
 
         T value_at(int position) const;
@@ -145,6 +155,8 @@ public:
 
         void prune_from_to(int prune_start, int prune_end);
 
+        void push(T element);
+
         void switch_holds(int pos1, int pos2);
 };
 
@@ -171,7 +183,11 @@ public:
 
         void operator+=(const List<T> &list_to_be_appended);
 
+        void operator+=(T element);
+
         RList<T> operator+(const List<T> &list_to_be_appended);
+
+        RList<T> operator+(T element);
 };
 
 // Tuple
@@ -280,6 +296,12 @@ void RList<T>::operator+=(const RList<T> &list_to_be_appended){
         this->append_list(list_to_be_appended);
 }
 
+// Operator += Overload for single elements
+template <class T>
+void RList<T>::operator+=(T element){
+        this->append(element);
+}
+
 // Operator + Overload
 template <class T>
 RList<T> RList<T>::operator+(const RList<T> &list_to_be_appended){
@@ -297,7 +319,63 @@ RList<T> RList<T>::operator+(const RList<T> &list_to_be_appended){
         return return_list;
 }
 
+// Operator + Overload for single elements
+template <class T>
+RList<T> List<T>::operator+(T element){
+        RList<T> return_list;
+        for(int i = 0; i < this->length(); i++)
+        {
+                return_list.append(this->value_at(i));
+        }
+        return_list.append(element);
+
+        return return_list;
+}
+
 // --------------------------------------------------------------------
+
+// peek
+template <class T>
+T RList<T>::peek(){
+        int this_length = this->length();
+        if(this_length == 0)
+        {
+                throw std::domain_error("ERROR: Peek is not defined for empty lists.\n");
+        }
+        else
+        {
+                return this->value_at(this_length-1);
+        }
+}
+
+// peek
+template <class T>
+T RList<T>::peek() const{
+        int this_length = this->length();
+        if(this_length == 0)
+        {
+                throw std::domain_error("ERROR: Peek is not defined for empty lists.\n");
+        }
+        else
+        {
+                return this->value_at(this_length-1);
+        }
+}
+
+// pop
+template <class T>
+T RList<T>::pop(){
+        int this_length = this->length();
+        if(this_length == 0)
+        {
+                throw std::domain_error("ERROR: Cannot pop an empty list.\n");
+        }
+        else
+        {
+                return this->value_at(this_length-1);
+        }
+}
+
 // value_at
 template <class T>
 T RList<T>::value_at(int position){
@@ -642,6 +720,12 @@ void RList<T>::prune_from_to(int prune_start, int prune_end){
        }
 }
 
+// push
+template <class T>
+void RList<T>::push(T element){
+        this->append(element);
+}
+
 // switch_holds
 template <class T>
 void RList<T>::switch_holds(int pos1, int pos2){
@@ -764,6 +848,12 @@ void List<T>::operator+=(const List<T> &list_to_be_appended){
         this->append_list(list_to_be_appended);
 }
 
+// Operator += Overload for single elements
+template <class T>
+void List<T>::operator+=(T element){
+        this->append(element);
+}
+
 // Operator + Overload
 template <class T>
 RList<T> List<T>::operator+(const List<T> &list_to_be_appended){
@@ -777,6 +867,19 @@ RList<T> List<T>::operator+(const List<T> &list_to_be_appended){
         {
                 return_list.append(list_to_be_appended.value_at(i));
         }
+
+        return return_list;
+}
+
+// Operator + Overload for single elements
+template <class T>
+RList<T> RList<T>::operator+(T element){
+        RList<T> return_list;
+        for(int i = 0; i < this->length(); i++)
+        {
+                return_list.append(this->value_at(i));
+        }
+        return_list.append(element);
 
         return return_list;
 }
