@@ -363,7 +363,7 @@ T RList<T>::peek() const{
 }
 
 // pop
-template <class T>
+template <class TT>
 T RList<T>::pop(){
         int this_length = this->length();
         if(this_length == 0)
@@ -372,7 +372,9 @@ T RList<T>::pop(){
         }
         else
         {
-                return this->value_at(this_length-1);
+                T return_value = this->value_at(this_length-1);
+                this->delete_at(this_length-1);
+                return return_value;
         }
 }
 
