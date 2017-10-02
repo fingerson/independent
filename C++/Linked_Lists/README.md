@@ -9,58 +9,58 @@ A library that contains the definition and many functions for the use of linked 
 ## REFERENCE MANUAL
 * [RList](https://github.com/Beoww/independent/blob/master/C%2B%2B/Linked_Lists/README.md#rlist)
 	* [Supported Operators](#supported-operators)
-		* [ostream <<](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#)
-		* [[ ]](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-)
-		* [==](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-1)    
-		* [!=](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-2)
-		* [>](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-3)
-		* [>=](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-4)
-		* [<](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-5)
-		* [<=](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-6)
-		* [=](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-7)
-		* [+=](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-8)
-		* [+](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-9)
-	* [Functions](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#functions)
-		* [Constructor](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#constructor)
-		* [append](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#append)
-		* [append_at](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#append_at)
-		* [append_list](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#append_list)
-		* [append_list_at](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#append_list_at)
-		* [assign_at](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#assign_at)
-		* [assign_from_array](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#assign_from_array)
-		* [contains](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#contains)
-		* [copy_list](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#copy_list)
-		* [delete_all](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#delete_all)
-		* [delete_at](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#delete_at)
-		* [has_elements](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#has_elements)
-		* [length](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#length)
-		* [peek](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#peek)
-		* [pop](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#pop)
-		* [prune_at](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#prune_at)
-		* [prune_from_to](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#prune_from_to)
-		* [push](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#push)
-		* [switch_holds](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#switch_holds)
-* [List](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#list)
-* [Tuple](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#tuple)
-	* [Supported Operators](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#supported-operators-1)
-		* [ostream <<](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-10)
-		* [==](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-11)
-		* [!=](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-12)
-		* [=](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-13)
-	* [Functions](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#functions-1)
-		* [Constructor](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#constructor-1)
-		* [left](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#left)
-		* [right](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#right)
-* [Other Functions](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#other-functions)
-	* [foldl](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#foldl)
-	* [foldr](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#foldr)
-	* [head](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#head)
-	* [filter](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#filter)
-	* [init](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#init)
-	* [map_on](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#map_on)
-	* [reverse_list](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#reverse_list)
-	* [tail](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#tail)
-	* [zip](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#zip)
+		* [ostream <<](#ostream-)
+		* [[ ]](#-)
+		* [==](#-1)    
+		* [!=](#-2)
+		* [>](#-3)
+		* [>=](#-4)
+		* [<](#-5)
+		* [<=](#-6)
+		* [=](#-7)
+		* [+=](#-8)
+		* [+](#-9)
+	* [Functions](#functions)
+		* [Constructor](#constructor)
+		* [append](#append)
+		* [append_at](#append_at)
+		* [append_list](#append_list)
+		* [append_list_at](#append_list_at)
+		* [assign_at](#assign_at)
+		* [assign_from_array](#assign_from_array)
+		* [contains](#contains)
+		* [copy_list](#copy_list)
+		* [delete_all](#delete_all)
+		* [delete_at](#delete_at)
+		* [has_elements](#has_elements)
+		* [length](#length)
+		* [peek](#peek)
+		* [pop](#pop)
+		* [prune_at](#prune_at)
+		* [prune_from_to](#prune_from_to)
+		* [push](#push)
+		* [switch_holds](#switch_holds)
+* [List](#list)
+* [Tuple](#tuple)
+	* [Supported Operators](#supported-operators-1)
+		* [ostream <<](#ostream--1)
+		* [==](#-11)
+		* [!=](#-12)
+		* [=](#-13)
+	* [Functions](#functions-1)
+		* [Constructor](#constructor-1)
+		* [left](#left)
+		* [right](#right)
+* [Other Functions](#other-functions)
+	* [foldl](#foldl)
+	* [foldr](#foldr)
+	* [head](#head)
+	* [filter](#filter)
+	* [init](#init)
+	* [map_on](#map_on)
+	* [reverse_list](#reverse_list)
+	* [tail](#tail)
+	* [zip](#zip)
 
 
 # RList
@@ -93,7 +93,7 @@ for(int i = 0; i <= 3; i++)
 ```
 ---
 
-## ostream <<  
+## <<  
 If used with std::cout, the syntax:
 ``` c++
 std::cout << my_list << std::endl;
@@ -661,7 +661,7 @@ Tuple<int,float> my_tuple(4, 2.718);
 Tuple<int,float> different_tuple(2, 6.2831);
 ```
 
-## ostream <<
+## <<
 Using std::cout, the syntax:
 ```c++
 std::cout << my_tuple << std::endl;
@@ -971,6 +971,3 @@ Will produce:
 Since zip returns a list with the length of the smaller of the argument lists.
 
 ---
-
-
-
