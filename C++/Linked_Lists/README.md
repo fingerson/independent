@@ -7,7 +7,7 @@ A library that contains the definition and many functions for the use of linked 
  * If using a function that returns a linked list, use the Base class of List, RList. They are identical, with the exception that RList does not delete itself after the end of scope, while List does, in order to avoid memory leaks.
 
 ## REFERENCE MANUAL
-* [RList](https://github.com/Beoww/independent/blob/master/C%2B%2B/README.md#RList)
+* [RList](https://github.com/Beoww/independent/blob/master/C%2B%2B/Linked_Lists/README.md#rlist)
 	* [Supported Operators](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#supported-operators)
 		* [<<](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#)
 		* [[ ]](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#-)
