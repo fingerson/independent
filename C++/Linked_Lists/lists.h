@@ -75,8 +75,6 @@ private:
                 }
         };
 
-
-protected:
         Node <T>* first_node;
 
 public:
@@ -84,6 +82,9 @@ public:
         RList();
 
 // Operator overloads
+
+        T& operator[](int i);
+
         bool operator==(const RList<T> &list_to_be_compared);
 
         bool operator!=(const RList<T> &list_to_be_compared);
@@ -105,7 +106,6 @@ public:
         RList<T> operator+(const RList<T> &list_to_be_appended);
 
         RList<T> operator+(T element);
-
 
 // T-type functions
         T peek();
@@ -164,7 +164,9 @@ public:
 template <class T>
 class List : public RList<T>{
 public:
+
         ~List();
+
         bool operator==(const List<T> &list_to_be_compared);
 
         bool operator!=(const List<T> &list_to_be_compared);
@@ -233,6 +235,33 @@ RList<T>::RList(){
 }
 
 // --------------------------------------------------------------------
+
+// Operator [] Overload
+template <class T>
+T& RList<T>::operator[](int i){
+        if(i < 0)
+        {
+                throw std::out_of_range("ERROR: Access request to out of range node.\n");
+        }
+        else if(this->first_node == NULL)
+        {
+                this->append(T());
+        }
+
+        Node<T>* down_the_list = this->first_node;
+        int j;
+        T null_append = T();
+        for(j = 0; j < i; j++)
+        {
+                if(down_the_list->next_node == NULL)
+                {
+                        this->append(null_append);
+                }
+                down_the_list = down_the_list->next_node;
+        }
+
+        return down_the_list->hold;
+}
 
 // Operator == Overload
 template <class T>
@@ -363,7 +392,7 @@ T RList<T>::peek() const{
 }
 
 // pop
-template <class TT>
+template <class T>
 T RList<T>::pop(){
         int this_length = this->length();
         if(this_length == 0)
