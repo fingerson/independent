@@ -8,7 +8,7 @@ A library that contains the definition and many functions for the use of linked 
 
 ## REFERENCE MANUAL
 * [RList](https://github.com/Beoww/independent/blob/master/C%2B%2B/README.md#RList)
-	* [Supported Operators]()
+	* [Supported Operators](https://github.com/Beoww/independent/tree/master/C++/Linked_Lists#supported-operators)
 		* [<<]()
 		* [[ ]]()
 		* [==]()    
