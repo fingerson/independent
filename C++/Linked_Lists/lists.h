@@ -47,7 +47,7 @@ template <class T>
 RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped);
 
 template <class T>
-RList<T> reverse_list(const RList<T> list_to_be_reverted);
+RList<T> reverse_list(const RList<T> list_to_be_reversed);
 
 template <class T, class S>
 RList< Tuple<T,S> > zip(const RList<T> &list_1, const RList<S> &list_2);
@@ -1120,12 +1120,12 @@ RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped){
 
 // reverse_list
 template <class T>
-RList<T> reverse_list(const RList<T> list_to_be_reverted){
+RList<T> reverse_list(const RList<T> list_to_be_reversed){
         RList<T> return_list;
-        int list_length = list_to_be_reverted.length();
+        int list_length = list_to_be_reversed.length();
         for(int i = 0; i < list_length; i++)
         {
-                return_list.append(list_to_be_reverted.value_at(list_length -1 -i));
+                return_list.append(list_to_be_reversed.value_at(list_length -1 -i));
         }
         return return_list;
 }
