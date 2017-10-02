@@ -5,3 +5,972 @@ A library that contains the definition and many functions for the use of linked 
 ## HOW TO USE:
  * The type List creates a linked list header type of structure. This structure can then be assigned elements. Each element is kept within a monad-like structure called a Node, which has a hold and a link mebers. In general, one does not need to use the nodes during the coding with linked lists.
  * If using a function that returns a linked list, use the Base class of List, RList. They are identical, with the exception that RList does not delete itself after the end of scope, while List does, in order to avoid memory leaks.
+
+## REFERENCE MANUAL
+* [RList](https://github.com/Beoww/independent/blob/master/C%2B%2B/README.md#RList)
+	* [Supported Operators]()
+		* [<<]()
+		* [[ ]]()
+		* [==]()    
+		* [!=]()
+		* [>]()
+		* [>=]()
+		* [<]()
+		* [<=]()
+		* [=]()
+		* [+=]()
+		* [+]()
+	* [Functions]()
+		* [Constructor]()
+		* [append]()
+		* [append_at]()
+		* [append_list]()
+		* [append_list_at]()
+		* [assign_at]()
+		* [assign_from_array]()
+		* [contains]()
+		* [copy_list]()
+		* [delete_all]()
+		* [delete_at]()
+		* [has_elements]()
+		* [length]()
+		* [peek]()
+		* [pop]()
+		* [prune_at]()
+		* [prune_from_to]()
+		* [push]()
+		* [switch_holds]()
+* [List]()
+* [Tuple]()
+	* [Supported Operators]()
+		* [<<]()
+		* [==]()
+		* [!=]()
+		* [=]()
+	* [Functions]()
+		* [Constructor]()
+		* [left]()
+		* [right]()
+* [Other Functions]()
+	* [foldl]()
+	* [foldr]()
+	* [head]()
+	* [filter]()
+	* [init]()
+	* [map_on]()
+	* [reverse_list]()
+	* [tail]()
+	* [zip]()
+
+
+# RList
+A class type that acts as a base for the List type. It works with dynamic memory allocation and can support multidimensional lists.
+
+## Supported Operators
+For the demonstration of the effects of each one of the operators, a simple list which contains the numbers 4 through 0 in regressive order will be used. Such a list can be obtained with a syntax similar to the one bellow (other syntaxes are also possible).
+```c++
+RList<int> my_list;
+for(int i = 0; i <= 4; i++)
+{
+	my_list[i] = 4 - i;
+}
+```
+We will also define other lists in similar ways for other operator examples:
+```c++
+// equal_list
+RList<int> equal_list;
+for(int i = 0; i <= 4; i++)
+{
+	equal_list[i] = 4 - i;
+}
+
+// shorter_list
+RList<int> shorter_list;
+for(int i = 0; i <= 3; i++)
+{
+	shorter_list[i] = 3 - i;
+}
+```
+---
+
+## <<  
+If used with std::cout, the syntax:
+``` c++
+std::cout << my_list << std::endl;
+```
+Will produce:
+
+> [4,3,2,1,0]
+
+It is important to notice that << has a special behavior when applied to lists of chars. For instance, the syntax
+```
+List<char> char_list;
+char_list.assign_from_array("Test");
+std::cout << char_list << std::endl;
+```
+
+Will produce:
+> Test
+
+This is so that it can be used as a string. If one does not want this type of behavior, a class that is analog to char and outputs the char when used with the operator << can be created and used.
+
+---
+
+## [ ]
+If used with std::cout, the syntax:
+``` c++
+std::cout << my_list[3] << std::endl;
+```
+Will produce:
+>  1
+
+---
+
+## ==
+If used with std::cout, the syntax:
+``` c++
+std::cout << (my_list == equal_list ? "True" : "False") << std::endl;
+std::cout << (my_list == shorter_list ? "True" : "False") << std::endl;
+```
+Will produce:
+> True
+> False
+
+This operator compares each one of the elements in order to see if both lists are equal.
+
+---
+
+## !=
+If used with std::cout, the syntax:
+``` c++
+std::cout << (my_list != equal_list ? "True" : "False") << std::endl;
+std::cout << (my_list != shorter_list ? "True" : "False") << std::endl;
+```
+Will produce:
+> False
+> True
+
+This operator compares each one of the elements in order to see if both lists are different.
+
+---
+## >
+If used with std::cout, the syntax:
+``` c++
+std::cout << (my_list > equal_list ? "True" : "False") << std::endl;
+std::cout << (my_list > shorter_list ? "True" : "False") << std::endl;
+```
+Will produce:
+> False
+> True
+
+Since this operator compares the length of the lists.
+
+---
+## >=
+If used with std::cout, the syntax:
+``` c++
+std::cout << (my_list > equal_list ? "True" : "False") << std::endl;
+std::cout << (my_list > shorter_list ? "True" : "False") << std::endl;
+```
+Will produce:
+> False
+> True
+
+Since this operator compares the length of the lists.
+
+---
+
+## <
+If used with std::cout, the syntax:
+``` c++
+std::cout << (my_list < equal_list ? "True" : "False") << std::endl;
+std::cout << (my_list < shorter_list ? "True" : "False") << std::endl;
+```
+Will produce:
+> False
+> False
+
+Since this operator compares the length of the lists.
+
+---
+
+## <=
+If used with std::cout, the syntax:
+```c++
+std::cout << (my_list <= equal_list ? "True" : "False") << std::endl;
+std::cout << (my_list <= shorter_list ? "True" : "False") << std::endl;
+```
+Will produce:
+> True
+> False
+
+Since this operator compares the length of the lists.
+
+---
+
+## =
+If used with std::cout, the syntax:
+``` c++
+List<int> another_list;
+another_list = shorter_list;
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [3, 2, 1, 0]
+
+This operator deletes all elements of the receiver list and attributes to it all of the elements that belong to the list on the right-hand side.
+
+---
+
+## +=
+If used with std::cout, the syntax:
+``` c++
+List<int> yet_another_list;
+yet_another_list = my_list;
+yet_another_list += shorter_list;
+std::cout << yet_another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0,3,2,1,0]
+
+Since this operator appends the list on the right-hand side to the end of the list on the left-hand side.
+
+This operator also works with single values, for example, the syntax:
+```c++
+List<int> yet_another_list;
+yet_another_list = my_list;
+yet_another_list += 5;
+std::cout << yet_another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0,5]
+
+In this case, the operator appends the element on the right-hand side to the end of the list on the left-hand side.
+
+---
+
+## +
+If used with std::cout, the syntax:
+``` c++
+List<int> yet_another_list;
+yet_another_list = my_list + shorter_list;
+std::cout << yet_another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0,3,2,1,0]
+
+Since the + operator returns a RList equivalent to the two lists on each side concatenated.
+
+This operator also works with single values, for example, the syntax:
+```c++
+List<int> yet_another_list;
+yet_another_list = my_list + 5;
+std::cout << yet_another_list << std::endl;
+```
+will produce the following result:
+> [4,3,2,1,0,5]
+
+In this case, the operator returns a RList equivalent to the list on its left concatenated with the single element on its right.
+
+---
+
+## Functions
+
+## Constructor
+When initialized, the RList is an empty list.
+
+## append
+```c++
+void append(T element);
+```
+element: An element of the type T that to be embedded in the list.
+
+For example, syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+another_list.append(5);
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0,5]
+
+---
+## append_at
+```c++
+void append_at(int position, T element);
+```
+position: The position within the array the element will occupy after appending.
+element: An element of the type T that to be embedded in the list.
+
+For example, syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+another_list.append_at(2, 5);
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,5,2,1,0]
+
+---
+
+## append_list
+```c++
+void append_list(const RList<T> &list_to_be_appended);
+```
+list_to_be_appended: The list that is concatenated after the first list.
+
+For example, syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+another_list.append_list(shorter_list);
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0,3,2,1,0]
+
+---
+
+
+## append_list_at
+```c++
+void append_list_at(int position, const RList<T> &list_to_be_appended);
+```
+position: The position which the first element of the appended list will occupy after the appending.
+list_to_be_appended: The list that is concatenated after the first list.
+
+For example, syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+another_list.append_list(2, shorter_list);
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,3,2,1,0,2,1,0]
+
+---
+
+## assign_at
+```c++
+void assign_at(int position, T element);
+```
+position: The position at which the assigned element will be held;
+element: The element to be held in the list.
+
+For example, syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+another_list.assign_at(3,7);
+```
+Will produce:
+> [4,3,2,7,0]
+
+---
+
+## assign_from_array
+```c++
+void assign_from_array(T assigner_array[], int array_size)
+```
+assigner_array: The name of the array from which the elements are to be assigned to the list.
+array_size: The size of the assigner_array, or, at least, the number of elements from the assigner_array that shall be assigned to the list.
+
+For example, the syntax:
+```c++
+List<int> array_list;
+int my_array[4] = {2,7,1,8};
+array_list.assign_from_array(my_array, 4);
+std::cout << array_list << std::endl;
+```
+Will produce:
+> [2,7,1,8]
+
+This function also has the overloaded exception for char lists, which only takes an array:
+```c++
+void assign_from_array(char assigner_array[])
+```
+
+In this case, the syntax:
+```c++
+List<char> char_list;
+char_list.assign_from_array("Test");
+std::cout << char_list << std::endl;
+```
+Will produce:
+>Test
+
+The difference in the format of the cout output is explained in the section about the << operator for RLists.
+
+## contains
+```c++
+bool contains(const RList<T> &contained_list);
+```
+contained_list: The list which the function shall test to see if it is a subset of the list object which called the function.
+
+The syntax:
+```c++
+std::cout << my_list << std::endl;
+std::cout << shorter_list << std::endl;
+
+std::cout << (my_list.contains(shorter_list)? "True" : "False") << std::endl;
+```
+Will produce:
+> [4,3,2,1,0]
+> [3,2,1,0]
+> True
+
+---
+
+## copy_list
+```c++
+void copy_list(const RList<T> &list_to_be_copied);
+```
+list_to_be_copied: The list whose elements shall be transplanted to the caller object in the same order.
+
+The syntax:
+```c++
+List<int> another_list;
+another_list.copy_list(my_list);
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0]
+
+Note that the behavior of the copy_list function is identical to the = operator.
+
+---
+
+## delete_all
+```c++
+void delete_all()
+```
+The syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+std::cout << another_list << std::endl;
+another_list.delete_all();
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0]
+> []
+
+Since the delete_all function deletes all of the elements inside the list, turning it into an empty list.
+
+---
+
+## delete_at
+```c++
+void delete_at(int position);
+```
+position: The position of the element to be deleted.
+
+The syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+std::cout << another_list << std::endl;
+another_list.delete_at(3);
+std::cout << another_list << std::endl;
+```
+
+Will produce:
+> [4,3,2,1,0]
+> [4,3,2,0]
+
+---
+
+## has_elements
+```c++
+bool has_elements()
+```
+
+The syntax:
+```c++
+List<T> another_list;
+std::cout << (another_list.has_elements() ? "True" : "False") << std::endl;
+```
+Will produce:
+> False
+
+Since by default, the initialized list is an empty list (see Constructor).
+
+---
+
+## length
+```c++
+int length()
+```
+
+The syntax:
+```c++
+std::cout << my_list.length() << std::endl;
+```
+Will produce:
+> 5
+
+Since it returns the total number of elements within the list.
+
+---
+## peek
+```c++
+T peek()
+```
+The syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+std::cout << another_list << std::endl;
+std::cout << another_list.peek() << std::endl;
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0]
+> 0
+> [4,3,2,1,0]
+
+Since it returns the last element WITHOUT DELETING IT.
+
+## pop
+```c++
+T pop()
+```
+
+The syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+std::cout << another_list << std::endl;
+std::cout << another_list.pop() << std::endl;
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0]
+> 0
+> [4,3,2,1]
+
+Since it returns the last element AND DELETES IT.
+
+
+##prune_at
+```c++
+void prune_at(int position)
+```
+The syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+std::cout << another_list << std::endl;
+another_list.prune_at(3);
+std::cout << another_list << std::endl;
+```
+Will produce:
+>[4,3,2,1,0]
+>[4,3,2]
+
+Since it deletes the elements from (and including) the position to the end.
+
+---
+
+## prune_from_to
+```c++
+void prune_from_to(int prune_start, int prune_end);
+```
+
+prune_start: The position of the first element to be deleted.
+prune_end: The position of the last element to be deleted.
+
+The syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+std::cout << another_list << std::endl;
+another_list.prune_from_to(1,3);
+std::cout << another_list << std::endl;
+```
+
+Will produce:
+> [4,3,2,1,0]
+> [4,0]
+
+Since it deletes all elements from (and including) prune_start to (and including) prune_end.
+
+---
+
+## push
+```c++
+void push(T element)
+```
+element: The element to be appended at the end of the list.
+
+The syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+another_list.push(5);
+std::cout << another_list << std::endl;
+```
+Will produce as output
+> [4,3,2,1,0,5]
+
+Note that the push() and the append() functions are identical. The reason for such a redundancy is to include the terminology used when working with stacks.
+
+---
+
+## switch_holds
+```c++
+void switch_holds(int pos1, int pos2)
+```
+pos1: The position of the element to be put in position pos2.
+pos2: The position of the element to be put in position pos1.
+
+The syntax:
+```c++
+List<int> another_list;
+another_list = my_list;
+std::cout << another_list << std::endl;
+another_list.switch_holds(1,4);
+std::cout << another_list << std::endl;
+```
+Will produce:
+> [4,3,2,1,0]
+> [4,0,2,1,3]
+
+Since it switches two of the elements within a list.
+
+---
+
+# List
+The List class is for almost all regards, identical to its base, the RList class. The difference between the two lies within the Destructor: While the List DELETES ALL OF ITS ELEMENTS when an instance goes out of scope, the RList does not. This means that, in general, the List class should be used, since it supports all of the functions and operations of the RList class (including assignment between them), and its destructor prevents issues with memory leak, since the linked lists use dynamic memory allocation.
+
+There are, however, cases which cannot be properly done with Lists, like the return of functions, in those cases, one should use the RList type (The R comes from this situation and stands for Return).
+
+---
+# Tuple
+
+Tuple is a type of structure that contains two elements in a pairing, and they can be of different types.
+
+## Supported Operators
+For the purpose of demonstration, the following tuples will be defined:
+```c++
+Tuple<int,float> my_tuple(4, 2.718);
+Tuple<int,float> different_tuple(2, 6.2831);
+```
+
+## <<
+Using std::cout, the syntax:
+```c++
+std::cout << my_tuple << std::endl;
+```
+Will produce:
+> (4,2.718)
+
+---
+## ==
+Using std::cout, the syntax:
+```c++
+std::cout << (my_tuple == different_tuple ? "True" : "False") << std::endl;
+```
+Will produce:
+> False
+
+Since the  == operator compares both elements in both tuples in order to see if they are equal.
+
+## !=
+Using std::cout, the syntax:
+```c++
+std::cout << (my_tuple != different_tuple ? "True" : "False") << std::endl;
+```
+Will produce:
+> True
+
+Since the  != operator compares both elements in both tuples in order to see if they are different.
+
+## =
+```c++
+Tuple<int, float> new_tuple;
+new_tuple = my_tuple;
+std::cout << new_tuple << std::endl;
+```
+Will produce:
+> (4,2.718)
+
+The operator = assigns the right-hand side tuple to the left-hand side one.
+
+---
+
+## Functions
+
+## Constructor
+The Tuple class has two different constructors. The first:
+```c++
+Tuple()
+```
+Takes no arguments and initializes its parameters with their basic constructors, and
+```c++
+Tuple(T left, S right)
+```
+assigns the element left to its member element left_elem and right to its member element right_elem.
+
+## left
+```c++
+T left()
+```
+The syntax
+```c++
+std::cout << my_tupple.left() << std::endl;
+```
+Will produce:
+> 4
+
+Since it returns the caller object's left_elem.
+
+---
+
+## right
+```c++
+S right()
+```
+The syntax
+```c++
+std::cout << my_tupple.right() << std::endl;
+```
+Will produce:
+> 2.718
+
+Since it returns the caller object's right_elem.
+
+---
+
+# Other functions
+For demonstration purposes, the following variables will be defined:
+```c++
+List<int> list_1;
+for(int i = 0; i <= 9; i++)
+{
+	list_1[i] = 9 - i;
+}
+
+List<int> list_2
+for(int i = 0; i <= 4; i++)
+{
+	list_2[i] = i;
+}
+```
+
+And the syntax
+```c++
+std::cout << list_1 << std::endl;
+std::cout << list_2 << std::endl;
+```
+Would produce
+> [9,8,7,6,5,4,3,2,1,0]
+> [0,1,2,3,4]
+
+We will also define three different functions
+```c++
+int sub_stuff(int a, int b){
+	return a-b;
+}
+
+bool is_pair(int a){
+	return (a%2? false : true);
+}
+
+int two_times(int a){
+	return 2*a;
+}
+```
+
+## foldl
+```c++
+T foldl(T (*f)(T, T), T x, const RList<T> &list_to_be_folded)
+```
+f: A function pointer to a function that receives two variables of type T and returns a type T value.
+x: A folding value.
+list_to_be_folded: A list on which the operation of folding will be done.
+
+The syntax:
+```c++
+int answer = foldl(sub_stuff, 3, list_1);
+std::cout << answer << std::endl;
+```
+Will produce:
+> -42
+
+Since:
+```math
+(((((((((3 - 9) - 8) - 7) - 6) - 5) - 4) -3) -2) -1) - 0 = -42
+```
+
+---
+
+## foldr
+```c++
+T foldr(T (*f)(T, T), T x, const RList<T> &list_to_be_folded)
+```
+f: A function pointer to a function that receives two variables of type T and returns a type T value.
+x: A folding value.
+list_to_be_folded: A list on which the operation of folding will be done.
+
+The syntax:
+```c++
+int answer = foldr(sub_stuff, 3, list_1);
+std::cout << answer << std::endl;
+```
+Will produce:
+> 8
+
+Since:
+```math
+9 -(8 -(7 -(6 - (5 - (4 - (3 -(2 - (1 - 0)))))))) = 8
+```
+
+---
+
+## head
+```c++
+T head(const RList<T> &list_to_be_headed)
+```
+list_to_be_headed: List whose first element will be returned.
+
+The syntax:
+```c++
+int head_of_list = head(list_1);
+std::cout << head_of_list << std::endl;
+```
+Will produce:
+> 9
+
+Since head returns a non-empty list's first element.
+
+---
+
+## filter
+```c++
+RList<T> filter(bool (*f)(T), const RList<T> &list_to_be_filtered)
+```
+f: A boolean filter function pointer.
+list_to_be_filtered: A list that will provide the test elements for f.
+
+The syntax:
+```c++
+List<int> filtered_list;
+filtered_list = filter(is_pair, list_1);
+std::cout << filtered_list << std::endl;
+```
+
+Will produce:
+>[8,6,4,2,0]
+
+Since filter keeps all elements of the parameter list that return true when applied to the boolean filter function.
+
+---
+
+## init
+```c++
+RList<T> init(const RList<T> &list_to_be_inited)
+```
+list_to_be_inited: The list whose first elements will be returned.
+
+The syntax:
+```c++
+List<int> inited_list;
+inited_list = init(list_1);
+std::cout << inited_list << std::endl;
+```
+Will produce:
+> [9,8,7,6,5,4,3,2,1]
+
+Since init returns all elements but the last one.
+
+---
+
+##map_on
+```c++
+RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped)
+```
+
+f:  Function pointer of the function that will be mapped onto each element of the list.
+list_to_be_mapped: List whose elements will be mapped into the return list through f.
+
+The syntax:
+```c++
+List<int> mapped_list;
+mapped_list = map_on(two_times, list_1)
+std::cout << mapped_list << std::endl;
+```
+Will produce:
+> [18,16,14,12,10,8,6,4,2,0]
+
+Since the function two_times doubles an int and each int within list_1 is doubled and appended to mapped_list.
+
+---
+
+## reverse_list
+```c++
+RList<T> reverse_list(const RList<T> list_to_be_reversed)
+```
+list_to_be_reversed: The list whose elements will be appended in reverse order to the return list.
+
+The syntax:
+```c++
+List<int> reversed_list;
+reversed_list = reverse_list(list_1);
+std::cout << reversed_list << std::endl;
+```
+Will produce:
+> [0,1,2,3,4,5,6,7,8,9]
+
+---
+
+## tail
+```c++
+RList<T> tail(const RList<T> &list_to_be_tailed)
+```
+list_to_be_tailed: List who will provide its last elements to the return list.
+
+The syntax:
+```c++
+List<int> tailed_list;
+tailed_list = tail(list_1);
+std::cout << tailed_list << std::endl;
+```
+Will produce: 
+>[8,7,6,5,4,3,2,1,0]
+
+Since tail leaves out the first element of the argument list.
+
+---
+
+## zip
+```
+RList< Tuple<T,S> > zip(const RList<T> &list_1, const RList<S> &list_2)
+```
+
+list_1: The list that will provide its first elements to the left elements of each tuple in the return tuple list.
+list_2: The list that will provide its first elements to the right elements of each tuple in the return tuple list.
+
+The syntax:
+```c++
+List< Tuple<int,int> > tuple_list;
+std::cout << list_1 << std::endl;
+std::cout << list_2 << std::endl;
+tuple_list = zip(list1, lis2);
+std::cout << tuple_list << std::endl;
+```
+Will produce:
+> [9,8,7,6,5,4,3,2,1,0]
+> [0,1,2,3,4]
+> [(9,0),(8,1),(7,2),(6,3)(5,4)]
+
+Since zip returns a list with the length of the smaller of the argument lists.
+
+---
+
+
+
