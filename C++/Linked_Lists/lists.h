@@ -4,6 +4,7 @@
 #define NULL __null
 
 #include <iostream>
+#include <stdexcept>
 
 /* FORWARD DECLARATIONS */
 
