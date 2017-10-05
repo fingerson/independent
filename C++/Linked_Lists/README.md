@@ -93,7 +93,7 @@ for(int i = 0; i <= 3; i++)
 ```
 ---
 
-## <<  
+## ostream <<  
 If used with std::cout, the syntax:
 ``` c++
 std::cout << my_list << std::endl;
@@ -661,7 +661,7 @@ Tuple<int,float> my_tuple(4, 2.718);
 Tuple<int,float> different_tuple(2, 6.2831);
 ```
 
-## <<
+## ostream <<
 Using std::cout, the syntax:
 ```c++
 std::cout << my_tuple << std::endl;
