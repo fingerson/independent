@@ -996,7 +996,6 @@ S Tuple<T,S>::right() const{
 // Operator << Overload for RLists
 template <class T>
 std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed){
-        os << "[";
         int list_length = list_to_be_outputed.length();
         for(int i = 0; i < list_length-1; i++)
         {
