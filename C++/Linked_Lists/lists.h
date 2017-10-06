@@ -69,13 +69,20 @@ private:
                 Node<S>* next_node;
 
                 // Node Constructor
-                Node()
-                {
+                Node(){
                         hold = S();
                         next_node = NULL;
                 }
+
+                // Node Destructor
+                ~Node(){
+                        hold = S();
+                        next_node = NULL;
+                }
+
         };
 
+protected:
         Node <T>* first_node;
 
 public:
@@ -84,81 +91,84 @@ public:
 
 // Operator overloads
 
-        T& operator[](int i);
+        virtual T& operator[](int i);
 
-        bool operator==(const RList<T> &list_to_be_compared);
+        virtual bool operator==(const RList<T> &list_to_be_compared);
 
-        bool operator!=(const RList<T> &list_to_be_compared);
+        virtual bool operator!=(const RList<T> &list_to_be_compared);
 
-        bool operator>(const RList<T> &list_to_be_compared);
+        virtual bool operator>(const RList<T> &list_to_be_compared);
 
-        bool operator>=(const RList<T> &list_to_be_compared);
+        virtual bool operator>=(const RList<T> &list_to_be_compared);
 
-        bool operator<(const RList<T> &list_to_be_compared);
+        virtual bool operator<(const RList<T> &list_to_be_compared);
 
-        bool operator<=(const RList<T> &list_to_be_compared);
+        virtual bool operator<=(const RList<T> &list_to_be_compared);
 
-        void operator=(const RList<T> &list_to_be_copied);
+        virtual void operator=(const RList<T> &list_to_be_copied);
 
-        void operator+=(const RList<T> &list_to_be_appended);
+        virtual void operator+=(const RList<T> &list_to_be_appended);
 
-        void operator+=(T element);
+        virtual void operator+=(T element);
 
-        RList<T> operator+(const RList<T> &list_to_be_appended);
+        virtual RList<T> operator+(const RList<T> &list_to_be_appended);
 
-        RList<T> operator+(T element);
+        virtual RList<T> operator+(T element);
+
+// Node<T>* type functions
+        virtual Node<T>* first_address() const;
 
 // T-type functions
-        T peek();
+        virtual T peek();
 
-        T peek() const;
+        virtual T peek() const;
 
-        T pop();
+        virtual T pop();
 
-        T value_at(int position);
+        virtual T value_at(int position);
 
-        T value_at(int position) const;
+        virtual T value_at(int position) const;
 
 // Bool-type functions
-        bool contains(const RList<T> &contained_list);
+        virtual bool contains(const RList<T> &contained_list);
 
-        bool has_elements();
+        virtual bool has_elements();
 
-        bool has_elements() const;
+        virtual bool has_elements() const;
 
 // Int-type functions
-        int length();
+        virtual int length();
 
-        int length() const;
+        virtual int length() const;
 
 // Void-type functions
-        void append(T element);
+        virtual void append(T element);
 
-        void append_at(int position, T element);
+        virtual void append_at(int position, T element);
 
-        void append_list(const RList <T> &list_to_be_appended);
+        virtual void append_list(const RList <T> &list_to_be_appended);
 
-        void append_list_at(int position, const RList <T> &list_to_be_appended);
+        virtual void append_list_at(int position, const RList <T> &list_to_be_appended);
 
-        void assign_at(int position, T element);
+        virtual void assign_at(int position, T element);
 
-        void assign_from_array(T assigner_array[], int array_size);
+        virtual void assign_from_array(T assigner_array[], int array_size);
 
-        void assign_from_array(char assigner_array[]);
+        virtual void assign_from_array(char assigner_array[]);
 
-        void copy_list(const RList<T> &list_to_be_copied);
+        virtual void copy_list(const RList<T> &list_to_be_copied);
 
-        void delete_all();
+        virtual void delete_all();
 
-        void delete_at(int position);
+        virtual void delete_at(int position);
 
-        void prune_at(int position);
+        virtual void prune_at(int position);
 
-        void prune_from_to(int prune_start, int prune_end);
+        virtual void prune_from_to(int prune_start, int prune_end);
 
-        void push(T element);
+        virtual void push(T element);
 
-        void switch_holds(int pos1, int pos2);
+        virtual void switch_holds(int pos1, int pos2);
 };
 
 // List
@@ -360,6 +370,13 @@ RList<T> List<T>::operator+(T element){
         return_list.append(element);
 
         return return_list;
+}
+
+// --------------------------------------------------------------------
+
+template <class T>
+RList<T>::Node<T>* RList<T>::first_address() const{
+        return this->first_node;
 }
 
 // --------------------------------------------------------------------
@@ -871,7 +888,7 @@ void List<T>::operator=(const List<T> &list_to_be_copied){
 // Operator = Overload for RList assignments
 template <class T>
 void List<T>::operator=(const RList<T> &list_to_be_copied){
-        this->copy_list(list_to_be_copied);
+        this->first_node = list_to_be_copied.first_address();
 }
 
 // Operator += Overload
@@ -997,6 +1014,7 @@ S Tuple<T,S>::right() const{
 // Operator << Overload for RLists
 template <class T>
 std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed){
+        std::cout << "[";
         int list_length = list_to_be_outputed.length();
         for(int i = 0; i < list_length-1; i++)
         {
@@ -1014,7 +1032,6 @@ std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed){
 // Operator << Overload for RLists char specialization
 template <>
 std::ostream& operator<<(std::ostream& os, const RList<char> &list_to_be_outputed){
-        os << "[";
         int list_length = list_to_be_outputed.length();
         for(int i = 0; i < list_length; i++)
         {
