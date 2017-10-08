@@ -154,7 +154,7 @@ public:
 
         virtual void assign_from_array(T assigner_array[], int array_size);
 
-        virtual void assign_from_array(char assigner_array[]);
+        // virtual void assign_from_array(char assigner_array[]); DEPRECATED
 
         virtual void copy_list(const RList<T> &list_to_be_copied);
 
@@ -676,9 +676,10 @@ void RList<T>::assign_from_array(T assigner_array[], int array_size){
         }
 }
 
+/* DEPRECATED
 // assign_from_array for char arrays
-template <class T>
-void RList<T>::assign_from_array(char assigner_array[]){
+template <>
+void RList<char>::assign_from_array(char assigner_array[]){
         int i = 0;
         do
         {
@@ -686,6 +687,7 @@ void RList<T>::assign_from_array(char assigner_array[]){
                 i++;
         }while (assigner_array[i] != '\0');
 }
+*/
 
 // copy_list
 template <class T>
