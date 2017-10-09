@@ -201,7 +201,7 @@ std::cout << (my_list <= equal_list ? "True" : "False") << std::endl;
 std::cout << (my_list <= shorter_list ? "True" : "False") << std::endl;
 ```
 Will produce:
-> True
+> True  
 > False
 
 Since this operator compares the length of the lists.
@@ -216,7 +216,7 @@ another_list = shorter_list;
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [3, 2, 1, 0]
+> [3, 2, 1, 0]  
 
 This operator deletes all elements of the receiver list and attributes to it all of the elements that belong to the list on the right-hand side.
 
@@ -231,7 +231,7 @@ yet_another_list += shorter_list;
 std::cout << yet_another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0,3,2,1,0]
+> [4,3,2,1,0,3,2,1,0]  
 
 Since this operator appends the list on the right-hand side to the end of the list on the left-hand side.
 
@@ -243,7 +243,7 @@ yet_another_list += 5;
 std::cout << yet_another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0,5]
+> [4,3,2,1,0,5]  
 
 In this case, the operator appends the element on the right-hand side to the end of the list on the left-hand side.
 
@@ -257,7 +257,7 @@ yet_another_list = my_list + shorter_list;
 std::cout << yet_another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0,3,2,1,0]
+> [4,3,2,1,0,3,2,1,0]  
 
 Since the + operator returns a RList equivalent to the two lists on each side concatenated.
 
@@ -268,7 +268,7 @@ yet_another_list = my_list + 5;
 std::cout << yet_another_list << std::endl;
 ```
 will produce the following result:
-> [4,3,2,1,0,5]
+> [4,3,2,1,0,5]  
 
 In this case, the operator returns a RList equivalent to the list on its left concatenated with the single element on its right.
 
@@ -293,7 +293,7 @@ another_list.append(5);
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0,5]
+> [4,3,2,1,0,5]  
 
 ---
 ## append_at
@@ -311,7 +311,7 @@ another_list.append_at(2, 5);
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,5,2,1,0]
+> [4,3,5,2,1,0]  
 
 ---
 
@@ -329,7 +329,7 @@ another_list.append_list(shorter_list);
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0,3,2,1,0]
+> [4,3,2,1,0,3,2,1,0]  
 
 ---
 
@@ -349,7 +349,7 @@ another_list.append_list(2, shorter_list);
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,3,2,1,0,2,1,0]
+> [4,3,3,2,1,0,2,1,0]  
 
 ---
 
@@ -367,7 +367,7 @@ another_list = my_list;
 another_list.assign_at(3,7);
 ```
 Will produce:
-> [4,3,2,7,0]
+> [4,3,2,7,0]  
 
 ---
 
@@ -386,7 +386,7 @@ array_list.assign_from_array(my_array, 4);
 std::cout << array_list << std::endl;
 ```
 Will produce:
-> [2,7,1,8]
+> [2,7,1,8]  
 
 This function also has the overloaded exception for char lists, which only takes an array:
 ```c++
@@ -400,7 +400,7 @@ char_list.assign_from_array("Test");
 std::cout << char_list << std::endl;
 ```
 Will produce:
->Test
+>Test  
 
 The difference in the format of the cout output is explained in the section about the << operator for RLists.
 
@@ -418,9 +418,9 @@ std::cout << shorter_list << std::endl;
 std::cout << (my_list.contains(shorter_list)? "True" : "False") << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0]
-> [3,2,1,0]
-> True
+> [4,3,2,1,0]  
+> [3,2,1,0]  
+> True  
 
 ---
 
@@ -437,7 +437,7 @@ another_list.copy_list(my_list);
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0]
+> [4,3,2,1,0]  
 
 Note that the behavior of the copy_list function is identical to the = operator.
 
@@ -456,8 +456,8 @@ another_list.delete_all();
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0]
-> []
+> [4,3,2,1,0]  
+> []  
 
 Since the delete_all function deletes all of the elements inside the list, turning it into an empty list.
 
@@ -479,8 +479,8 @@ std::cout << another_list << std::endl;
 ```
 
 Will produce:
-> [4,3,2,1,0]
-> [4,3,2,0]
+> [4,3,2,1,0]  
+> [4,3,2,0]  
 
 ---
 
@@ -495,7 +495,7 @@ List<T> another_list;
 std::cout << (another_list.has_elements() ? "True" : "False") << std::endl;
 ```
 Will produce:
-> False
+> False  
 
 Since by default, the initialized list is an empty list (see Constructor).
 
@@ -511,7 +511,7 @@ The syntax:
 std::cout << my_list.length() << std::endl;
 ```
 Will produce:
-> 5
+> 5  
 
 Since it returns the total number of elements within the list.
 
@@ -529,9 +529,9 @@ std::cout << another_list.peek() << std::endl;
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0]
-> 0
-> [4,3,2,1,0]
+> [4,3,2,1,0]  
+> 0  
+> [4,3,2,1,0]  
 
 Since it returns the last element WITHOUT DELETING IT.
 
@@ -549,9 +549,9 @@ std::cout << another_list.pop() << std::endl;
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0]
-> 0
-> [4,3,2,1]
+> [4,3,2,1,0]  
+> 0  
+> [4,3,2,1]  
 
 Since it returns the last element AND DELETES IT.
 
@@ -569,8 +569,8 @@ another_list.prune_at(3);
 std::cout << another_list << std::endl;
 ```
 Will produce:
->[4,3,2,1,0]
->[4,3,2]
+>[4,3,2,1,0]  
+>[4,3,2]  
 
 Since it deletes the elements from (and including) the position to the end.
 
@@ -594,8 +594,8 @@ std::cout << another_list << std::endl;
 ```
 
 Will produce:
-> [4,3,2,1,0]
-> [4,0]
+> [4,3,2,1,0]  
+> [4,0]  
 
 Since it deletes all elements from (and including) prune_start to (and including) prune_end.
 
@@ -615,7 +615,7 @@ another_list.push(5);
 std::cout << another_list << std::endl;
 ```
 Will produce as output
-> [4,3,2,1,0,5]
+> [4,3,2,1,0,5]  
 
 Note that the push() and the append() functions are identical. The reason for such a redundancy is to include the terminology used when working with stacks.
 
@@ -637,8 +637,8 @@ another_list.switch_holds(1,4);
 std::cout << another_list << std::endl;
 ```
 Will produce:
-> [4,3,2,1,0]
-> [4,0,2,1,3]
+> [4,3,2,1,0]  
+> [4,0,2,1,3]  
 
 Since it switches two of the elements within a list.
 
@@ -669,7 +669,7 @@ Using std::cout, the syntax:
 std::cout << my_tuple << std::endl;
 ```
 Will produce:
-> (4,2.718)
+> (4,2.718)  
 
 ---
 ## ==
@@ -678,7 +678,7 @@ Using std::cout, the syntax:
 std::cout << (my_tuple == different_tuple ? "True" : "False") << std::endl;
 ```
 Will produce:
-> False
+> False  
 
 Since the  == operator compares both elements in both tuples in order to see if they are equal.
 
@@ -688,7 +688,7 @@ Using std::cout, the syntax:
 std::cout << (my_tuple != different_tuple ? "True" : "False") << std::endl;
 ```
 Will produce:
-> True
+> True  
 
 Since the  != operator compares both elements in both tuples in order to see if they are different.
 
@@ -699,7 +699,7 @@ new_tuple = my_tuple;
 std::cout << new_tuple << std::endl;
 ```
 Will produce:
-> (4,2.718)
+> (4,2.718)  
 
 The operator = assigns the right-hand side tuple to the left-hand side one.
 
@@ -727,7 +727,7 @@ The syntax
 std::cout << my_tupple.left() << std::endl;
 ```
 Will produce:
-> 4
+> 4  
 
 Since it returns the caller object's left_elem.
 
@@ -742,7 +742,7 @@ The syntax
 std::cout << my_tupple.right() << std::endl;
 ```
 Will produce:
-> 2.718
+> 2.718  
 
 Since it returns the caller object's right_elem.
 
@@ -770,7 +770,7 @@ std::cout << list_1 << std::endl;
 std::cout << list_2 << std::endl;
 ```
 Would produce
-> [9,8,7,6,5,4,3,2,1,0]
+> [9,8,7,6,5,4,3,2,1,0]  
 > [0,1,2,3,4]
 
 We will also define three different functions
@@ -802,7 +802,7 @@ int answer = foldl(sub_stuff, 3, list_1);
 std::cout << answer << std::endl;
 ```
 Will produce:
-> -42
+> -42  
 
 Since:
 ```math
@@ -825,7 +825,7 @@ int answer = foldr(sub_stuff, 3, list_1);
 std::cout << answer << std::endl;
 ```
 Will produce:
-> 8
+> 8  
 
 Since:
 ```math
@@ -846,7 +846,7 @@ int head_of_list = head(list_1);
 std::cout << head_of_list << std::endl;
 ```
 Will produce:
-> 9
+> 9  
 
 Since head returns a non-empty list's first element.
 
@@ -867,7 +867,7 @@ std::cout << filtered_list << std::endl;
 ```
 
 Will produce:
->[8,6,4,2,0]
+>[8,6,4,2,0]  
 
 Since filter keeps all elements of the parameter list that return true when applied to the boolean filter function.
 
@@ -886,7 +886,7 @@ inited_list = init(list_1);
 std::cout << inited_list << std::endl;
 ```
 Will produce:
-> [9,8,7,6,5,4,3,2,1]
+> [9,8,7,6,5,4,3,2,1]  
 
 Since init returns all elements but the last one.
 
@@ -907,7 +907,7 @@ mapped_list = map_on(two_times, list_1)
 std::cout << mapped_list << std::endl;
 ```
 Will produce:
-> [18,16,14,12,10,8,6,4,2,0]
+> [18,16,14,12,10,8,6,4,2,0]  
 
 Since the function two_times doubles an int and each int within list_1 is doubled and appended to mapped_list.
 
@@ -926,7 +926,7 @@ reversed_list = reverse_list(list_1);
 std::cout << reversed_list << std::endl;
 ```
 Will produce:
-> [0,1,2,3,4,5,6,7,8,9]
+> [0,1,2,3,4,5,6,7,8,9]  
 
 ---
 
@@ -943,7 +943,7 @@ tailed_list = tail(list_1);
 std::cout << tailed_list << std::endl;
 ```
 Will produce:
->[8,7,6,5,4,3,2,1,0]
+>[8,7,6,5,4,3,2,1,0]  
 
 Since tail leaves out the first element of the argument list.
 
@@ -966,9 +966,9 @@ tuple_list = zip(list1, lis2);
 std::cout << tuple_list << std::endl;
 ```
 Will produce:
-> [9,8,7,6,5,4,3,2,1,0]
-> [0,1,2,3,4]
-> [(9,0),(8,1),(7,2),(6,3)(5,4)]
+> [9,8,7,6,5,4,3,2,1,0]  
+> [0,1,2,3,4]  
+> [(9,0),(8,1),(7,2),(6,3)(5,4)]  
 
 Since zip returns a list with the length of the smaller of the argument lists.
 
