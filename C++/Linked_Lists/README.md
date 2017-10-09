@@ -133,7 +133,7 @@ std::cout << (my_list == equal_list ? "True" : "False") << std::endl;
 std::cout << (my_list == shorter_list ? "True" : "False") << std::endl;
 ```
 Will produce:
-> True
+> True  
 > False
 
 This operator compares each one of the elements in order to see if both lists are equal.
@@ -147,7 +147,7 @@ std::cout << (my_list != equal_list ? "True" : "False") << std::endl;
 std::cout << (my_list != shorter_list ? "True" : "False") << std::endl;
 ```
 Will produce:
-> False
+> False  
 > True
 
 This operator compares each one of the elements in order to see if both lists are different.
@@ -160,7 +160,7 @@ std::cout << (my_list > equal_list ? "True" : "False") << std::endl;
 std::cout << (my_list > shorter_list ? "True" : "False") << std::endl;
 ```
 Will produce:
-> False
+> False  
 > True
 
 Since this operator compares the length of the lists.
@@ -173,7 +173,7 @@ std::cout << (my_list > equal_list ? "True" : "False") << std::endl;
 std::cout << (my_list > shorter_list ? "True" : "False") << std::endl;
 ```
 Will produce:
-> False
+> False  
 > True
 
 Since this operator compares the length of the lists.
@@ -187,7 +187,7 @@ std::cout << (my_list < equal_list ? "True" : "False") << std::endl;
 std::cout << (my_list < shorter_list ? "True" : "False") << std::endl;
 ```
 Will produce:
-> False
+> False  
 > False
 
 Since this operator compares the length of the lists.
@@ -720,7 +720,7 @@ assigns the element left to its member element left_elem and right to its member
 
 ## left
 ```c++
-T left()
+T& left()
 ```
 The syntax
 ```c++
@@ -735,7 +735,7 @@ Since it returns the caller object's left_elem.
 
 ## right
 ```c++
-S right()
+S& right()
 ```
 The syntax
 ```c++
@@ -942,7 +942,7 @@ List<int> tailed_list;
 tailed_list = tail(list_1);
 std::cout << tailed_list << std::endl;
 ```
-Will produce: 
+Will produce:
 >[8,7,6,5,4,3,2,1,0]
 
 Since tail leaves out the first element of the argument list.

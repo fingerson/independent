@@ -222,11 +222,11 @@ public:
 
 // T and S functions
 
-        T left();
+        T& left();
 
         T left() const;
 
-        S right();
+        S& right();
 
         S right() const;
 
@@ -972,7 +972,7 @@ void Tuple<T,S>::operator=(const Tuple<T,S> &assign_tuple){
 
 // left
 template <class T, class S>
-T Tuple<T,S>::left(){
+T& Tuple<T,S>::left(){
         return left_elem;
 }
 
@@ -984,7 +984,7 @@ T Tuple<T,S>::left() const {
 
 // right
 template <class T, class S>
-S Tuple<T,S>::right(){
+S& Tuple<T,S>::right(){
         return right_elem;
 }
 
