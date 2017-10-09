@@ -388,21 +388,21 @@ std::cout << array_list << std::endl;
 Will produce:
 > [2,7,1,8]  
 
-This function also has the overloaded exception for char lists, which only takes an array:
-```c++
-void assign_from_array(char assigner_array[])
-```
+[//]: # (This function also has the overloaded exception for char lists, which only takes an array:)
+[//]: # (```c++)
+[//]: # (void assign_from_array(char assigner_array[]))
+[//]: # (```)
 
-In this case, the syntax:
-```c++
-List<char> char_list;
-char_list.assign_from_array("Test");
-std::cout << char_list << std::endl;
-```
-Will produce:
->Test  
+[//]: # (In this case, the syntax:)
+[//]: # (```c++)
+[//]: # (List<char> char_list;)
+[//]: # (char_list.assign_from_array("Test");)
+[//]: # (std::cout << char_list << std::endl;)
+[//]: # (```)
+[//]: # (Will produce:)
+[//]: # (>Test )
 
-The difference in the format of the cout output is explained in the section about the << operator for RLists.
+[//]: # (The difference in the format of the cout output is explained in the section about the << operator for RLists.)
 
 ## contains
 ```c++
