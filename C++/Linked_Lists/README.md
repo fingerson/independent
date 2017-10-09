@@ -2,9 +2,10 @@
 
 A library that contains the definition and many functions for the use of linked lists in C++.
 
-## HOW TO USE:
+## TL;DR
  * The type List creates a linked list header type of structure. This structure can then be assigned elements. Each element is kept within a monad-like structure called a Node, which has a hold and a link mebers. In general, one does not need to use the nodes during the coding with linked lists.
  * If using a function that returns a linked list, use the Base class of List, RList. They are identical, with the exception that RList does not delete itself after the end of scope, while List does, in order to avoid memory leaks.
+ * Tuples are a pairing of stuff. Not more complicated than that.
 
 ## REFERENCE MANUAL
 * [RList](https://github.com/Beoww/independent/blob/master/C%2B%2B/Linked_Lists/README.md#rlist)
@@ -733,6 +734,8 @@ Will produce:
 
 Since it returns the caller object's left_elem.
 
+Note that the const version of the left() function returns has a return type T, and not T&, since by definition, the parameters should not be changed.
+
 ---
 
 ## right
@@ -747,6 +750,8 @@ Will produce:
 > 2.718  
 
 Since it returns the caller object's right_elem.
+
+Note that the const version of the right() function returns has a return type S, and not S&, since by definition, the parameters should not be changed.
 
 ---
 
