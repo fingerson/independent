@@ -23,7 +23,6 @@ class Tuple;
 template <class T>
 std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed);
 
-template <>
 std::ostream& operator<<(std::ostream& os, const RList<char> &list_to_be_outputed);
 
 template <class T, class S>
@@ -1017,8 +1016,7 @@ std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed){
 }
 
 // Operator << Overload for RLists char specialization
-template <>
-std::ostream& operator<<(std::ostream& os, const RList<char> &list_to_be_outputed){
+inline std::ostream& operator<<(std::ostream& os, const RList<char> &list_to_be_outputed){
         int list_length = list_to_be_outputed.length();
         for(int i = 0; i < list_length; i++)
         {
