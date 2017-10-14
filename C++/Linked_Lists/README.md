@@ -62,7 +62,18 @@ A library that contains the definition and many functions for the use of linked 
 	* [reverse_list](#reverse_list)
 	* [tail](#tail)
 	* [zip](#zip)
-
+* [Errors](#errors)
+        * [std::domain_error](#std::domain_error)
+                * [Peek is not defined for empty lists](#peek-is-not-defined-for-empty-lists)
+                * [Cannot pop an empty list](#cannot-pop-an-empty-list)
+                * [Head not defined for empty lists](#head-not-defined-for-empty-lists)
+                * [Tail is not defined for empty lists](#tail-is-not-defined-for-empty-lists)
+        * [std::out_of_range](#std::out_of_range)
+                * [Access request to out of range node](#access-request-to-out-of-range-node)
+                * [Append request at out of range position](#append-request-at-out-of-range-position)
+                * [Assign request at out of range node](#assign-request-at-out-of-range-node)
+                * [Deletion request at out of range node](#deletion-request-at-out-of-range-node)
+                * [Switch request to at least one out of range node](#switch-request-to-at-least-one-out-of-range-node)
 
 # RList
 A class type that acts as a base for the List type. It works with dynamic memory allocation and can support multidimensional lists.
@@ -538,6 +549,11 @@ Will produce:
 
 Since it returns the last element WITHOUT DELETING IT.
 
+May throw the error(s):
+```c++
+std::domain_error("ERROR: Peek is not defined for empty lists.")
+```
+
 ## pop
 ```c++
 T pop()
@@ -558,6 +574,10 @@ Will produce:
 
 Since it returns the last element AND DELETES IT.
 
+May throw the error(s):
+```c++
+std::domain_error("ERROR: Cannot pop an empty list.\n")
+```
 
 ## prune_at
 ```c++
@@ -857,6 +877,11 @@ Will produce:
 
 Since head returns a non-empty list's first element.
 
+May throw the error(s):
+```c++
+std::domain_error("ERROR: Head not defined for empty lists.\n")
+```
+
 ---
 
 ## filter
@@ -980,3 +1005,70 @@ Will produce:
 Since zip returns a list with the length of the smaller of the argument lists.
 
 ---
+# Errors
+When the user tries to do some kind of forbidden action, some errors may be thrown.
+
+## std::domain_error
+Errors of this type are thrown when using a function on some kind of element not supported by the function itself. Similar to trying to calculate the square root of a negative number within the real set.
+
+---
+
+## Peek is not defined for empty lists
+Since peek returns the last element of a list, it cannot be applied on an empty list, since it has no elements to remove.
+
+May be thrown by [Rlist::peek](#peek)
+
+---
+
+## Cannot pop an empty list
+Since pop returns and removes the last element of a list, it cannot be applied on an empty list, since it has no elements to remove nor return.
+
+May be thrown by [Rlist::pop](#pop)
+
+---
+
+## Head not defined for empty lists
+Since head returns the first element of the list, it cannot be applied to an empty list, since it has no elements to return.
+
+May be thrown by [head](#head)
+
+---
+
+## Tail is not defined for empty lists
+Since tail returns the one list but the first element, it cannot be applied to an empty list, since there is no first element to be removed.
+
+May be thrown by [tail](#tail)
+
+---
+
+## std::out_of_range
+Errors of this type are thrown when trying to access or change some element at an inexistent position in the list.
+
+## Access request to out of range node.
+Error thrown when trying to read or change some element at a position that does not exist in the list. As example, when a list is 8 elements long and the user tries to access the element at position 10. For the operator [] within RLists, the error is only thrown if one tries to assign a negative position.
+
+May be thrown when using the [operator [] of RList](#-), [RList::value_at](#value_at)
+
+---
+
+## Append request at out of range position
+Error thrown when trying to append at some position that does not exist in the list. As example, when the user tries to append something at position 10 of a list that contains only 8 elements.
+
+May be thrown by [RList::append_at](#append_at), [RList::append_list_at](#append_list_at)
+
+## Assign request at out of range node
+Error thrown when trying to assing a value to a position that does not exist within the list. As example, when the user tries to assign a value to the position 10 of a list that is 8 elements long.
+
+May be thrown by [RList::assign_at](#assign_at)
+
+---
+
+## Deletion request at out of range node
+Error thrown when trying to delete an element at a position that does not belong to the list. As an example, this error will be thrown it one tries to delete the element at position 10 of a list that is 8 elements long.
+
+May be thrown by [RList::delete_at](#delete_at)
+
+## Switch request to at least one out of range node
+Error thrown when at least one position to be switched does not exist within the list. As an example, if one tries to switch the sixth and the tenth element of a list that is 8 elements long, this error will be thrown.
+
+May be thrown by [RList::switch_holds](#switch_holds)

@@ -392,7 +392,7 @@ T RList<T>::peek(){
         }
 }
 
-// peek
+// peek const
 template <class T>
 T RList<T>::peek() const{
         int this_length = this->length();
