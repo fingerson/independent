@@ -63,17 +63,17 @@ A library that contains the definition and many functions for the use of linked 
 	* [tail](#tail)
 	* [zip](#zip)
 * [Errors](#errors)
-        ⋅⋅* [std::domain_error](#stddomain_error)
-                * [Peek is not defined for empty lists](#peek-is-not-defined-for-empty-lists)
-                * [Cannot pop an empty list](#cannot-pop-an-empty-list)
-                * [Head not defined for empty lists](#head-not-defined-for-empty-lists)
+	* [std::domain_error](#stddomain_error)
+		* [Peek is not defined for empty lists](#peek-is-not-defined-for-empty-lists)
+		* [Cannot pop an empty list](#cannot-pop-an-empty-list)
+		* [Head not defined for empty lists](#head-not-defined-for-empty-lists)
                 * [Tail is not defined for empty lists](#tail-is-not-defined-for-empty-lists)
-        * [std::out_of_range](#stdout_of_range)
-                * [Access request to out of range node](#access-request-to-out-of-range-node)
-                * [Append request at out of range position](#append-request-at-out-of-range-position)
-                * [Assign request at out of range node](#assign-request-at-out-of-range-node)
-                * [Deletion request at out of range node](#deletion-request-at-out-of-range-node)
-                * [Switch request to at least one out of range node](#switch-request-to-at-least-one-out-of-range-node)
+	* [std::out_of_range](#stdout_of_range)
+		* [Access request to out of range node](#access-request-to-out-of-range-node)
+		* [Append request at out of range position](#append-request-at-out-of-range-position)
+		* [Assign request at out of range node](#assign-request-at-out-of-range-node)
+		* [Deletion request at out of range node](#deletion-request-at-out-of-range-node)
+		* [Switch request to at least one out of range node](#switch-request-to-at-least-one-out-of-range-node)
 
 # RList
 A class type that acts as a base for the List type. It works with dynamic memory allocation and can support multidimensional lists.
@@ -135,6 +135,9 @@ std::cout << my_list[3] << std::endl;
 ```
 Will produce:
 >  1
+
+May throw the erros(s):
+[std::out_of_range("ERROR: Access request to out of range node.")](#access-request-to-out-of-range-node)
 
 ---
 
@@ -550,9 +553,7 @@ Will produce:
 Since it returns the last element WITHOUT DELETING IT.
 
 May throw the error(s):
-```c++
-std::domain_error("ERROR: Peek is not defined for empty lists.")
-```
+[std::domain_error("ERROR: Peek is not defined for empty lists.")](#peek-is-not-defined-for-empty-lists)
 
 ## pop
 ```c++
@@ -575,9 +576,7 @@ Will produce:
 Since it returns the last element AND DELETES IT.
 
 May throw the error(s):
-```c++
-std::domain_error("ERROR: Cannot pop an empty list.\n")
-```
+[std::domain_error("ERROR: Cannot pop an empty list.\n")](#cannot-pop-an-empty-list)
 
 ## prune_at
 ```c++
@@ -666,6 +665,28 @@ Will produce:
 Since it switches two of the elements within a list.
 
 ---
+
+## value_at
+```c++
+T value_at(int position)
+```
+position: The position of the value to be returned.
+
+The syntax:
+```c++
+std::cout << my_list << std::endl;
+std::cout << my_list.value_at(3) << std::endl;
+```
+Will produce:
+> [4,3,2,1,0]  
+> 1  
+
+Since it returns the value of the element in position 3.
+
+May throw the erros(s):
+[std::out_of_range("ERROR: Access request to out of range node.")](#access-request-to-out-of-range-node)
+
+--- 
 
 # List
 The List class is for almost all regards, identical to its base, the RList class. The difference between the two are suddle. One of them lies within the Destructor: While the List DELETES ALL OF ITS ELEMENTS when an instance goes out of scope, the RList does not. This means that, in general, the List class should be used, since it supports all of the functions and operations of the RList class (including assignment between them), and its destructor prevents issues with memory leak, since the linked lists use dynamic memory allocation.
@@ -878,9 +899,7 @@ Will produce:
 Since head returns a non-empty list's first element.
 
 May throw the error(s):
-```c++
-std::domain_error("ERROR: Head not defined for empty lists.\n")
-```
+[std::domain_error("ERROR: Head not defined for empty lists.\n")](#head-not-defined-for-empty-lists)
 
 ---
 
@@ -979,6 +998,9 @@ Will produce:
 
 Since tail leaves out the first element of the argument list.
 
+May throw the error(s):
+[std::domain_error("ERROR: Tail is not defined for empty lists.")](#tail-is-not-defined-for-empty-lists)
+
 ---
 
 ## zip
@@ -1066,9 +1088,9 @@ May be thrown by [RList::assign_at](#assign_at)
 ## Deletion request at out of range node
 Error thrown when trying to delete an element at a position that does not belong to the list. As an example, this error will be thrown it one tries to delete the element at position 10 of a list that is 8 elements long.
 
-May be thrown by [RList::delete_at](#delete_at)
+May be thrown by [RList::delete_at](#delete_at), [RList::prune_at](#prune_at), [RList::prune_from_to](#prune_from_to).
 
 ## Switch request to at least one out of range node
 Error thrown when at least one position to be switched does not exist within the list. As an example, if one tries to switch the sixth and the tenth element of a list that is 8 elements long, this error will be thrown.
 
-May be thrown by [RList::switch_holds](#switch_holds)
+May be thrown by [RList::switch_holds](#switch_holds).
