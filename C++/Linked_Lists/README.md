@@ -136,7 +136,7 @@ std::cout << my_list[3] << std::endl;
 Will produce:
 >  1
 
-May throw the erros(s):
+May throw the erros(s):  
 [std::out_of_range("ERROR: Access request to out of range node.")](#access-request-to-out-of-range-node)
 
 ---
@@ -328,6 +328,9 @@ std::cout << another_list << std::endl;
 Will produce:
 > [4,3,5,2,1,0]  
 
+May throw the error(s):  
+[std::out_of_range("ERROR: Append request at out of range position.")](#append-request-at-out-of-range-position)
+
 ---
 
 ## append_list
@@ -366,6 +369,9 @@ std::cout << another_list << std::endl;
 Will produce:
 > [4,3,3,2,1,0,2,1,0]  
 
+May throw the error(s):  
+[std::out_of_range("ERROR: Append request at out of range position.")](#append-request-at-out-of-range-position)
+
 ---
 
 ## assign_at
@@ -383,6 +389,9 @@ another_list.assign_at(3,7);
 ```
 Will produce:
 > [4,3,2,7,0]  
+
+May throw the error(s):  
+[std::out_of_range("ERROR: Assign request at out of range node.")](#assign-request-at-out-of-range-node)
 
 ---
 
@@ -499,6 +508,9 @@ Will produce:
 > [4,3,2,1,0]  
 > [4,3,2,0]  
 
+May throw the error(s):  
+[std::out_of_range("ERROR: Deletion request at out of range node.")](#deletion-request-at-out-of-range-node)
+
 ---
 
 ## has_elements
@@ -552,7 +564,7 @@ Will produce:
 
 Since it returns the last element WITHOUT DELETING IT.
 
-May throw the error(s):
+May throw the error(s):  
 [std::domain_error("ERROR: Peek is not defined for empty lists.")](#peek-is-not-defined-for-empty-lists)
 
 ## pop
@@ -575,7 +587,7 @@ Will produce:
 
 Since it returns the last element AND DELETES IT.
 
-May throw the error(s):
+May throw the error(s):  
 [std::domain_error("ERROR: Cannot pop an empty list.\n")](#cannot-pop-an-empty-list)
 
 ## prune_at
@@ -595,6 +607,9 @@ Will produce:
 >[4,3,2]  
 
 Since it deletes the elements from (and including) the position to the end.
+
+May throw the error(s):  
+[std::out_of_range("ERROR: Deletion request at out of range node.")](#deletion-request-at-out-of-range-node)
 
 ---
 
@@ -620,6 +635,9 @@ Will produce:
 > [4,0]  
 
 Since it deletes all elements from (and including) prune_start to (and including) prune_end.
+
+May throw the error(s):  
+[std::out_of_range("ERROR: Deletion request at out of range node.")](#deletion-request-at-out-of-range-node)
 
 ---
 
@@ -664,6 +682,9 @@ Will produce:
 
 Since it switches two of the elements within a list.
 
+May throw the error(s):  
+[std::out_of_range("ERROR: Switch request to at least one out of range node.")](#switch-request-to-at-least-one-out-of-range-node)
+
 ---
 
 ## value_at
@@ -683,7 +704,7 @@ Will produce:
 
 Since it returns the value of the element in position 3.
 
-May throw the erros(s):
+May throw the errors(s):  
 [std::out_of_range("ERROR: Access request to out of range node.")](#access-request-to-out-of-range-node)
 
 --- 
@@ -898,7 +919,7 @@ Will produce:
 
 Since head returns a non-empty list's first element.
 
-May throw the error(s):
+May throw the error(s):  
 [std::domain_error("ERROR: Head not defined for empty lists.\n")](#head-not-defined-for-empty-lists)
 
 ---
@@ -998,7 +1019,7 @@ Will produce:
 
 Since tail leaves out the first element of the argument list.
 
-May throw the error(s):
+May throw the error(s):  
 [std::domain_error("ERROR: Tail is not defined for empty lists.")](#tail-is-not-defined-for-empty-lists)
 
 ---
@@ -1038,28 +1059,28 @@ Errors of this type are thrown when using a function on some kind of element not
 ## Peek is not defined for empty lists
 Since peek returns the last element of a list, it cannot be applied on an empty list, since it has no elements to remove.
 
-May be thrown by [Rlist::peek](#peek)
+May be thrown by [Rlist::peek](#peek).
 
 ---
 
 ## Cannot pop an empty list
 Since pop returns and removes the last element of a list, it cannot be applied on an empty list, since it has no elements to remove nor return.
 
-May be thrown by [Rlist::pop](#pop)
+May be thrown by [Rlist::pop](#pop).
 
 ---
 
 ## Head not defined for empty lists
 Since head returns the first element of the list, it cannot be applied to an empty list, since it has no elements to return.
 
-May be thrown by [head](#head)
+May be thrown by [head](#head).
 
 ---
 
 ## Tail is not defined for empty lists
 Since tail returns the one list but the first element, it cannot be applied to an empty list, since there is no first element to be removed.
 
-May be thrown by [tail](#tail)
+May be thrown by [tail](#tail).
 
 ---
 
@@ -1069,19 +1090,19 @@ Errors of this type are thrown when trying to access or change some element at a
 ## Access request to out of range node.
 Error thrown when trying to read or change some element at a position that does not exist in the list. As example, when a list is 8 elements long and the user tries to access the element at position 10. For the operator [] within RLists, the error is only thrown if one tries to assign a negative position.
 
-May be thrown when using the [operator [] of RList](#-), [RList::value_at](#value_at)
+May be thrown when using the [operator [] of RList](#-), [RList::value_at](#value_at).
 
 ---
 
 ## Append request at out of range position
 Error thrown when trying to append at some position that does not exist in the list. As example, when the user tries to append something at position 10 of a list that contains only 8 elements.
 
-May be thrown by [RList::append_at](#append_at), [RList::append_list_at](#append_list_at)
+May be thrown by [RList::append_at](#append_at), [RList::append_list_at](#append_list_at).
 
 ## Assign request at out of range node
 Error thrown when trying to assing a value to a position that does not exist within the list. As example, when the user tries to assign a value to the position 10 of a list that is 8 elements long.
 
-May be thrown by [RList::assign_at](#assign_at)
+May be thrown by [RList::assign_at](#assign_at).
 
 ---
 
