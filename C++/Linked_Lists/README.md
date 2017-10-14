@@ -63,7 +63,7 @@ A library that contains the definition and many functions for the use of linked 
 	* [tail](#tail)
 	* [zip](#zip)
 * [Errors](#errors)
-        * [std::domain_error](#stddomain_error)
+        ⋅⋅* [std::domain_error](#stddomain_error)
                 * [Peek is not defined for empty lists](#peek-is-not-defined-for-empty-lists)
                 * [Cannot pop an empty list](#cannot-pop-an-empty-list)
                 * [Head not defined for empty lists](#head-not-defined-for-empty-lists)
