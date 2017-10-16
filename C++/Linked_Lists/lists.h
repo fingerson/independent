@@ -19,6 +19,9 @@ class List;
 template <class T, class S>
 class Tuple;
 
+class RString;
+class String;
+
 // Functions
 template <class T>
 std::ostream& operator<<(std::ostream& os, const RList<T> &list_to_be_outputed);
@@ -43,11 +46,22 @@ RList<T> filter(bool (*f)(T), const RList<T> &list_to_be_filtered);
 template <class T>
 RList<T> init(const RList<T> &list_to_be_inited);
 
+RList<RString> lines(const RString& to_be_lined);
+
 template <class T>
 RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped);
 
 template <class T>
-RList<T> reverse_list(const RList<T> list_to_be_reversed);
+RList<T> reverse_list(const RList<T>& list_to_be_reversed);
+
+template <class T>
+RList<T> tail(const RList<T> &list_to_be_tailed);
+
+RString unlines(const RList<RString>& to_be_unlined);
+
+RString unwords(const RList<RString>& to_be_unlined);
+
+RList<RString> words(const RString& to_be_worded);
 
 template <class T, class S>
 RList< Tuple<T,S> > zip(const RList<T> &list_1, const RList<S> &list_2);
@@ -85,12 +99,18 @@ protected:
         Node <T>* first_node;
 
 public:
+
+// Friend class
+        friend class RString;
+
 // Constructors
         RList();
 
 // Operator overloads
 
         virtual T& operator[](int i);
+
+        virtual T operator[](int i) const;
 
         virtual bool operator==(const RList<T> &list_to_be_compared);
 
@@ -233,6 +253,25 @@ public:
 
 };
 
+// RString
+class RString : public RList<char>{
+public:
+        virtual void operator=(const char array_of_chars[]);
+
+        virtual void to_upper();
+        virtual void to_lower();
+
+};
+
+// String
+class String : public RString{
+public:
+        ~String();
+        void operator=(const char array_of_chars[]);
+        // COMEHERE
+        void operator=(const RString& copy_rstring);
+};
+
 // --------------------------------------------------------------------
 
 /*RLIST FUNCTIONS*/
@@ -266,6 +305,33 @@ T& RList<T>::operator[](int i){
                         this->append(null_append);
                 }
                 down_the_list = down_the_list->next_node;
+        }
+
+        return down_the_list->hold;
+}
+
+// Operator [] Overload const
+template <class T>
+T RList<T>::operator[](int i) const{
+        if(i < 0)
+        {
+                throw std::out_of_range("ERROR: Access request to out of range node.\n");
+        }
+        else if(this->first_node == NULL)
+        {
+                throw std::out_of_range("ERROR: Access request to out of range node.\n");
+        }
+
+        Node<T>* down_the_list = this->first_node;
+        int j;
+        for(j = 0; j < i && down_the_list != NULL; j++)
+        {
+                down_the_list = down_the_list->next_node;
+        }
+
+        if(down_the_list == NULL)
+        {
+                throw std::out_of_range("ERROR: Access request to out of range node.\n");
         }
 
         return down_the_list->hold;
@@ -874,6 +940,7 @@ void List<T>::operator=(const List<T> &list_to_be_copied){
 // Operator = Overload for RList assignments
 template <class T>
 void List<T>::operator=(const RList<T> &list_to_be_copied){
+        this->delete_all();
         this->first_node = list_to_be_copied.first_address();
 }
 
@@ -995,6 +1062,61 @@ S Tuple<T,S>::right() const{
 }
 
 // --------------------------------------------------------------------
+
+/* RString operators */
+inline void RString::operator=(const char array_of_chars[]){
+        int i = 0;
+        while(array_of_chars[i] != '\0')
+        {
+                this->append(array_of_chars[i]);
+                i++;
+        }
+}
+
+inline void RString::to_upper(){
+        Node<char>* down_the_list = this->first_node;
+        while(down_the_list != NULL)
+        {
+                if(down_the_list->hold >= 'a' && down_the_list->hold <= 'z')
+                {
+                        down_the_list->hold -= 32;
+                }
+                down_the_list = down_the_list->next_node;
+        }
+}
+
+inline void RString::to_lower(){
+        Node<char>* down_the_list = this->first_node;
+        while(down_the_list != NULL)
+        {
+                if(down_the_list->hold >= 'A' && down_the_list->hold <= 'Z')
+                {
+                        down_the_list->hold += 32;
+                }
+                down_the_list = down_the_list->next_node;
+        }
+}
+
+// --------------------------------------------------------------------
+
+inline void String::operator=(const char array_of_chars[]){
+        int i = 0;
+        while(array_of_chars[i] != '\0')
+        {
+                this->append(array_of_chars[i]);
+                i++;
+        }
+}
+inline void String::operator=(const RString& copy_rstring){
+        this->delete_all();
+        this->first_node = copy_rstring.first_address();
+}
+
+inline String::~String(){
+        this->delete_all();
+}
+
+// --------------------------------------------------------------------
 /* FUNCTIONS OUTSIDE OF CLASSES */
 
 // Operator << Overload for RLists
@@ -1109,6 +1231,28 @@ RList<T> init(const RList<T> &list_to_be_inited){
         return return_list;
 }
 
+// lines
+inline RList<RString> lines(const RString& to_be_lined){
+        int string_length = to_be_lined.length();
+        int ret_i = 0;
+        int ret_j = 0;
+        RList<RString> return_list;
+        for(int i = 0; i < string_length; i++)
+        {
+                if(to_be_lined[i] == '\n')
+                {
+                        ret_j = 0;
+                        ret_i++;
+                }
+                else
+                {
+                        return_list[ret_i][ret_j] = to_be_lined[i];
+                        ret_j++;
+                }
+        }
+        return return_list;
+}
+
 // map_on
 template <class T>
 RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped){
@@ -1122,7 +1266,7 @@ RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped){
 
 // reverse_list
 template <class T>
-RList<T> reverse_list(const RList<T> list_to_be_reversed){
+RList<T> reverse_list(const RList<T>& list_to_be_reversed){
         RList<T> return_list;
         int list_length = list_to_be_reversed.length();
         for(int i = 0; i < list_length; i++)
@@ -1146,6 +1290,69 @@ RList<T> tail(const RList<T> &list_to_be_tailed){
         {
                 throw std::domain_error("ERROR: Tail is not defined for empty lists.\n");
         }
+}
+
+// unlines
+inline RString unlines(const RList<RString>& to_be_unlined){
+        int list_length = to_be_unlined.length();
+        std::cout << to_be_unlined << std::endl;
+        RString return_string;
+        for(int i = 0; i < list_length; i++)
+        {
+                return_string.append_list(to_be_unlined[i]);
+                if(i < list_length - 1)
+                {
+                        return_string.append('\n');
+                }
+        }
+        return return_string;
+}
+
+// unwords
+inline RString unwords(const RList<RString>& to_be_unlined){
+        int list_length = to_be_unlined.length();
+        RString return_string;
+        for(int i = 0; i < list_length; i++)
+        {
+                return_string.append_list(to_be_unlined[i]);
+                if(i < list_length - 1)
+                {
+                        return_string.append(' ');
+                }
+        }
+        return return_string;
+}
+
+// words
+inline RList<RString> words(const RString& to_be_worded){
+        int string_length = to_be_worded.length();
+        RList<RString> return_list;
+        bool found_space = false;
+        bool wordsfound = false;
+        int ret_i = 0;
+        int ret_j = 0;
+        for(int i = 0; i < string_length; i++)
+        {
+                if(to_be_worded[i] == ' ')
+                {
+                        found_space = true;
+                        ret_j = 0;
+                }
+                else if(found_space == true)
+                {
+                        ret_i = ( wordsfound ? 0 : ret_i + 1);
+                        wordsfound = true;
+                        return_list[ret_i][ret_j] = to_be_worded[i];
+                        ret_j++;
+                        found_space = false;
+                }
+                else
+                {
+                        return_list[ret_i][ret_j] = to_be_worded[i];
+                        ret_j++;
+                }
+        }
+        return return_list;
 }
 
 // zip
