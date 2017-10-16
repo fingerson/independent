@@ -987,7 +987,7 @@ Since the function two_times doubles an int and each int within list_1 is double
 
 ## reverse_list
 ```c++
-RList<T> reverse_list(const RList<T> list_to_be_reversed)
+RList<T> reverse_list(const RList<T>& list_to_be_reversed)
 ```
 list_to_be_reversed: The list whose elements will be appended in reverse order to the return list.
 
