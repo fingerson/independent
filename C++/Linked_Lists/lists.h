@@ -99,8 +99,7 @@ protected:
         Node <T>* first_node;
 
 public:
-
-// Friend class
+// Friends
         friend class RString;
 
 // Constructors
@@ -161,15 +160,15 @@ public:
         virtual int length() const;
 
 // Void-type functions
-        virtual void append(T element);
+        virtual void append(const T& element);
 
-        virtual void append_at(int position, T element);
+        virtual void append_at(int position, const T& element);
 
         virtual void append_list(const RList <T> &list_to_be_appended);
 
         virtual void append_list_at(int position, const RList <T> &list_to_be_appended);
 
-        virtual void assign_at(int position, T element);
+        virtual void assign_at(int position, const T& element);
 
         virtual void assign_from_array(T assigner_array[], int array_size);
 
@@ -183,7 +182,7 @@ public:
 
         virtual void prune_from_to(int prune_start, int prune_end);
 
-        virtual void push(T element);
+        virtual void push(const T& element);
 
         virtual void switch_holds(int pos1, int pos2);
 };
@@ -256,8 +255,12 @@ public:
 // RString
 class RString : public RList<char>{
 public:
+// Operators
         virtual void operator=(const char array_of_chars[]);
+        RString(const char char_array[]);
+        RString();
 
+// Void-type functions
         virtual void to_upper();
         virtual void to_lower();
 
@@ -266,9 +269,13 @@ public:
 // String
 class String : public RString{
 public:
+// Constructors and Destructors
+        String(const char char_array[]);
+        String();
         ~String();
+
+// Operators
         void operator=(const char array_of_chars[]);
-        // COMEHERE
         void operator=(const RString& copy_rstring);
 };
 
@@ -350,7 +357,7 @@ bool RList<T>::operator==(const RList<T> &list_to_be_compared){
                 bool is_equal = true;
                 for(int i = 0; i < this_length && is_equal; i++)
                 {
-                        is_equal = (this->value_at(i) != list_to_be_compared.value_at(i));
+                        is_equal = (this->value_at(i) == list_to_be_compared.value_at(i));
 
                 }
                 return is_equal;
@@ -613,17 +620,15 @@ int RList<T>::length() const{
 // --------------------------------------------------------------------
 // append
 template <class T>
-void RList<T>::append(T element){
+void RList<T>::append(const T& element){
         try
         {
-                if(first_node != NULL)
+                if(this->first_node != NULL)
                 {
-                        Node<T>* down_the_list = first_node;
+                        Node<T>* down_the_list = this->first_node;
                         Node<T>* before_down_the_list;
-                        int counter = 0;
                         while(down_the_list != NULL)
                         {
-                                counter++;
                                 before_down_the_list = down_the_list;
                                 down_the_list = down_the_list->next_node;
                         }
@@ -649,7 +654,7 @@ void RList<T>::append(T element){
 
 // append_at
 template <class T>
-void RList<T>::append_at(int position, T element){
+void RList<T>::append_at(int position, const T& element){
 
         try
         {
@@ -712,7 +717,7 @@ void RList<T>::append_list_at(int position, const RList <T> &list_to_be_appended
 
 // assign_at
 template <class T>
-void RList<T>::assign_at(int position, T element){
+void RList<T>::assign_at(int position, const T& element){
         Node<T>* down_the_list = this->first_node;
         for(int i = 0; i < position && down_the_list != NULL; i++)
         {
@@ -823,7 +828,7 @@ void RList<T>::prune_from_to(int prune_start, int prune_end){
 
 // push
 template <class T>
-void RList<T>::push(T element){
+void RList<T>::push(const T& element){
         this->append(element);
 }
 
@@ -874,7 +879,6 @@ void RList<T>::switch_holds(int pos1, int pos2){
 /* LIST CLASS FUNCTIONS */
 
 // List Class Operators
-
 // List Destructor
 template <class T>
 List<T>::~List(){
@@ -894,7 +898,7 @@ bool List<T>::operator==(const List<T> &list_to_be_compared){
                 bool is_equal = true;
                 for(int i = 0; i < this_length && is_equal; i++)
                 {
-                        is_equal = (this->value_at(i) != list_to_be_compared.value_at(i));
+                        is_equal = (this->value_at(i) == list_to_be_compared.value_at(i));
 
                 }
                 return is_equal;
@@ -1009,7 +1013,7 @@ template <class T, class S>
 bool Tuple<T,S>::operator==(const Tuple<T,S> &compare_tuple){
         if(this->left_elem == compare_tuple.left())
         {
-               if(this->right_elem == compare_tuple.right)
+               if(this->right_elem == compare_tuple.right_elem)
                {
                        return true;
                }
@@ -1062,8 +1066,20 @@ S Tuple<T,S>::right() const{
 }
 
 // --------------------------------------------------------------------
+/* RSTRING CLASS FUNCTIONS  */
+inline RString::RString(const char char_array[]){
+        int i = 0;
+        while(char_array[i] != '\0')
+        {
+                this->append(char_array[i]);
+                i++;
+        }
+}
 
-/* RString operators */
+inline RString::RString(){
+        this->first_node = NULL;
+}
+
 inline void RString::operator=(const char array_of_chars[]){
         int i = 0;
         while(array_of_chars[i] != '\0')
@@ -1098,6 +1114,23 @@ inline void RString::to_lower(){
 }
 
 // --------------------------------------------------------------------
+/* STRING CLASS FUNCTIONS */
+
+inline String::String(const char char_array[]){
+        int i = 0;
+        while(char_array[i] != '\0')
+        {
+                this->append(char_array[i]);
+                i++;
+        }
+}
+inline String::String(){
+        this->first_node = NULL;
+}
+
+inline String::~String(){
+        this->delete_all();
+}
 
 inline void String::operator=(const char array_of_chars[]){
         int i = 0;
@@ -1110,10 +1143,6 @@ inline void String::operator=(const char array_of_chars[]){
 inline void String::operator=(const RString& copy_rstring){
         this->delete_all();
         this->first_node = copy_rstring.first_address();
-}
-
-inline String::~String(){
-        this->delete_all();
 }
 
 // --------------------------------------------------------------------
