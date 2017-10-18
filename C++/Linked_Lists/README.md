@@ -33,6 +33,7 @@ A library that contains the definition and many functions for the use of linked 
 		* [copy_list](#copy_list)
 		* [delete_all](#delete_all)
 		* [delete_at](#delete_at)
+                * [first_address](#first_address)
 		* [has_elements](#has_elements)
 		* [length](#length)
 		* [peek](#peek)
@@ -141,6 +142,8 @@ This is so that it can be used as a string. If one does not want this type of be
 ---
 
 ## [ ]
+This operator supports const objects.
+
 If used with std::cout, the syntax:
 ``` c++
 std::cout << my_list[3] << std::endl;
@@ -507,7 +510,21 @@ May throw the error(s):
 
 ---
 
+## first_address
+This function ONLY supports const objects.
+```c++
+Node<T>* first_address()
+```
+This function returns a list's first_node address.
+
+Since the function returns and address, the function return varies depending on the user machine's behavior.
+
+---
+
 ## has_elements
+
+This function supports const objects.
+
 ```c++
 bool has_elements()
 ```
@@ -525,6 +542,9 @@ Since by default, the initialized list is an empty list (see Constructor).
 ---
 
 ## length
+
+This function supports const objects.
+
 ```c++
 int length()
 ```
@@ -540,6 +560,9 @@ Since it returns the total number of elements within the list.
 
 ---
 ## peek
+
+This function supports const objects.
+
 ```c++
 T peek()
 ```
@@ -682,6 +705,9 @@ May throw the error(s):
 ---
 
 ## value_at
+
+This function supports const objects.
+
 ```c++
 T value_at(int position)
 ```
@@ -872,6 +898,9 @@ Tuple(T left, S right)
 assigns the element left to its member element left_elem and right to its member element right_elem.
 
 ## left
+
+This function supports const objects.
+
 ```c++
 T& left()
 ```
@@ -889,6 +918,9 @@ Note that the const version of the left() function returns has a return type T, 
 ---
 
 ## right
+
+This function supports const objects.
+
 ```c++
 S& right()
 ```
@@ -1204,8 +1236,6 @@ std::cout << words(my_string) << std::endl;
 ```
 Will produce:  
 > [Hello,World]  
-
----
 
 ---
 
