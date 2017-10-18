@@ -33,7 +33,7 @@ A library that contains the definition and many functions for the use of linked 
 		* [copy_list](#copy_list)
 		* [delete_all](#delete_all)
 		* [delete_at](#delete_at)
-                * [first_address](#first_address)
+		* [first_address](#first_address)
 		* [has_elements](#has_elements)
 		* [length](#length)
 		* [peek](#peek)
