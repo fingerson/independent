@@ -706,7 +706,7 @@ May throw the errors(s):
 # List
 The List class is for almost all regards, identical to its base, the RList class. The difference between the two are suddle. One of them lies within the Destructor: While the List DELETES ALL OF ITS ELEMENTS when an instance goes out of scope, the RList does not. This means that, in general, the List class should be used, since it supports all of the functions and operations of the RList class (including assignment between them), and its destructor prevents issues with memory leak, since the linked lists use dynamic memory allocation.
 
-The second difference appears when attributing a RList to a List. Instead of copying each one of the elements and, in essence, rewriting all of the list to the receiving variable. The RList will instead give its first_node address to the List, who will act as a second header to the SAME LIST. This means that deleting one can yeld problems with the other. This is functionality serves the purposes explained bellow.
+The second difference appears when attributing a RList to a List. Instead of copying each one of the elements and, in essence, rewriting all of the list to the receiving variable. The RList will instead give its first_node address to the List, who will act as a second header to the SAME LIST. This means that deleting one can yield problems with the other. This is functionality serves the purposes explained bellow.
 
 There are, however, cases which cannot be properly done with Lists, like the return of functions, in those cases, one should use the RList type (The R comes from this situation and stands for Return).
 
@@ -792,6 +792,16 @@ std::cout << string_1 << std::endl;
 Will produce:  
 > Hello World  
 > HELLO WORLD  
+
+---
+
+# String
+
+The String class is for almost all regards, identical to its base, the RString class. The difference between the two are suddle. One of them lies within the Destructor: While the String DELETES ALL OF ITS ELEMENTS when an instance goes out of scope, the RString does not. This means that, in general, the String class should be used, since it supports all of the functions and operations of the RString class (including assignment between them), and its destructor prevents issues with memory leak, since the linked lists use dynamic memory allocation.
+
+The second difference appears when attributing a RString to a String. Instead of copying each one of the elements and, in essence, rewriting all of the string to the receiving variable. The RString will instead give its first_node address to the String, who will act as a second header to the SAME LIST. This means that deleting one can yield problems with the other. This is functionality serves the purposes explained bellow.
+
+There are, however, cases which cannot be properly done with String, like the return of functions, in those cases, one should use the RString type (The R comes from this situation and stands for Return).
 
 ---
 
