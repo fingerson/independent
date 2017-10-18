@@ -59,7 +59,7 @@ RList<T> tail(const RList<T> &list_to_be_tailed);
 
 RString unlines(const RList<RString>& to_be_unlined);
 
-RString unwords(const RList<RString>& to_be_unlined);
+RString unwords(const RList<RString>& to_be_unworded);
 
 RList<RString> words(const RString& to_be_worded);
 
@@ -1309,12 +1309,12 @@ inline RString unlines(const RList<RString>& to_be_unlined){
 }
 
 // unwords
-inline RString unwords(const RList<RString>& to_be_unlined){
-        int list_length = to_be_unlined.length();
+inline RString unwords(const RList<RString>& to_be_unworded){
+        int list_length = to_be_unworded.length();
         RString return_string;
         for(int i = 0; i < list_length; i++)
         {
-                return_string.append_list(to_be_unlined[i]);
+                return_string.append_list(to_be_unworded[i]);
                 if(i < list_length - 1)
                 {
                         return_string.append(' ');

@@ -42,14 +42,22 @@ A library that contains the definition and many functions for the use of linked 
 		* [push](#push)
 		* [switch_holds](#switch_holds)
 * [List](#list)
+* [RString](#rstring)
+        * [Supported Operators](#supported-operators-1)
+                * [=](#-11)
+        * [Functions](#functions-1)
+                * [Constructor](#constructor-1)
+                * [to_lower](#to_lower)
+                * [to_upper](#to_upper)
+* [String](#string)
 * [Tuple](#tuple)
-	* [Supported Operators](#supported-operators-1)
+	* [Supported Operators](#supported-operators-2)
 		* [ostream <<](#ostream--1)
-		* [==](#-11)
-		* [!=](#-12)
-		* [=](#-13)
-	* [Functions](#functions-1)
-		* [Constructor](#constructor-1)
+		* [==](#-12)
+		* [!=](#-13)
+		* [=](#-14)
+	* [Functions](#functions-2)
+		* [Constructor](#constructor-2)
 		* [left](#left)
 		* [right](#right)
 * [Other Functions](#other-functions)
@@ -58,9 +66,13 @@ A library that contains the definition and many functions for the use of linked 
 	* [head](#head)
 	* [filter](#filter)
 	* [init](#init)
+        * [lines](#lines)
 	* [map_on](#map_on)
 	* [reverse_list](#reverse_list)
 	* [tail](#tail)
+        * [unlines](#unlines)
+        * [unwords](#unwords)
+        * [words](#words)
 	* [zip](#zip)
 * [Errors](#errors)
 	* [std::domain_error](#stddomain_error)
@@ -296,7 +308,7 @@ When initialized, the RList is an empty list.
 
 ## append
 ```c++
-void append(T element);
+void append(const T& element);
 ```
 element: An element of the type T that to be embedded in the list.
 
@@ -313,7 +325,7 @@ Will produce:
 ---
 ## append_at
 ```c++
-void append_at(int position, T element);
+void append_at(int position, const T& element);
 ```
 position: The position within the array the element will occupy after appending.
 element: An element of the type T that to be embedded in the list.
@@ -376,7 +388,7 @@ May throw the error(s):
 
 ## assign_at
 ```c++
-void assign_at(int position, T element);
+void assign_at(int position, const T& element);
 ```
 position: The position at which the assigned element will be held;
 element: The element to be held in the list.
@@ -411,24 +423,6 @@ std::cout << array_list << std::endl;
 ```
 Will produce:
 > [2,7,1,8]  
-
-<!---
-This function also has the overloaded exception for char lists, which only takes an array:
-```c++
-void assign_from_array(char assigner_array[])
-```
-
-In this case, the syntax:
-```c++
-List<char> char_list;
-char_list.assign_from_array("Test");
-std::cout << char_list << std::endl;
-```
-Will produce:
->Test
-
-The difference in the format of the cout output is explained in the section about the << operator for RLists.
---->
 
 ## contains
 ```c++
@@ -643,7 +637,7 @@ May throw the error(s):
 
 ## push
 ```c++
-void push(T element)
+void push(const T& element)
 ```
 element: The element to be appended at the end of the list.
 
@@ -707,7 +701,7 @@ Since it returns the value of the element in position 3.
 May throw the errors(s):  
 [std::out_of_range("ERROR: Access request to out of range node.")](#access-request-to-out-of-range-node)
 
---- 
+---
 
 # List
 The List class is for almost all regards, identical to its base, the RList class. The difference between the two are suddle. One of them lies within the Destructor: While the List DELETES ALL OF ITS ELEMENTS when an instance goes out of scope, the RList does not. This means that, in general, the List class should be used, since it supports all of the functions and operations of the RList class (including assignment between them), and its destructor prevents issues with memory leak, since the linked lists use dynamic memory allocation.
@@ -717,6 +711,90 @@ The second difference appears when attributing a RList to a List. Instead of cop
 There are, however, cases which cannot be properly done with Lists, like the return of functions, in those cases, one should use the RList type (The R comes from this situation and stands for Return).
 
 ---
+# RString
+The RString class is a similar class to [RList<char>](#rlist), being both derived as a friend of it. It has some of the same functionalities as both the RList class and the string type. It is meant to be a type used when returning some value to a String, such as the relationship between RLists and Lists.
+
+## Supported Operators
+This class supports all the same operators in the same way as a [RList<char>](#rlist). There is one special case with the operator =, which can receive a const char array.
+## =
+The operator = WILL function as in the [RList<char>](#-7) cases, however, this describes an special case, in which it receives a const char array.
+
+Using std::cout, the syntax:
+```c++
+RString my_string;
+my_string = "Hello World";
+
+std::cout << my_string << std::endl;
+```
+Will produce:  
+> Hello World  
+
+---
+
+## Functions
+This class supports all the same functions as [RList<char>](#functions), as well as some special functions.
+
+## Constructor
+As well as the [same constructor](#constructor) that creates empty lists and takes no arguments from RList<char> it has a special constructor that receives a const char array.
+
+Using std::cout, the syntax:
+```c++
+RString string_1("Hello World (1)");
+RString string_2 = "Hello World (2)";
+
+std::cout << string_1 << std::endl;
+std::cout << string_2 << std::endl;
+```
+Will produce:  
+> Hello World (1)  
+> Hello World (2)  
+
+Since both syntaxes are valid.  
+
+---
+
+## to_lower
+
+```c++
+void to_lower()
+```
+This is a function that turns all the letters in a RString object to lowercase.
+
+Using std::cout, the syntax:
+```c++
+RString string_1 = "Hello World";
+
+std::cout << string_1 << std::endl;
+string_1.to_lower();
+std::cout << string_1 << std::endl;
+```
+Will produce:  
+> Hello World  
+> hello world  
+
+---
+
+## to_upper
+
+```c++
+void to_upper()
+```
+This is a function that turns all letters in a RString object to uppercase.
+
+Using std::cout, the syntax:
+```c++
+RString string_1 = "Hello World";
+
+std::cout << string_1 << std::endl;
+string_1.to_upper();
+std::cout << string_1 << std::endl;
+```
+Will produce:  
+> Hello World  
+> HELLO WORLD  
+
+---
+
 # Tuple
 
 Tuple is a type of structure that contains two elements in a pairing, and they can be of different types.
@@ -964,6 +1042,81 @@ Since init returns all elements but the last one.
 
 ---
 
+## lines
+```c++
+RList<RString> lines(const RList<T> &to_be_lined)
+```
+
+to_be_lined: The list to have its lines mapped to elements in the return list.
+
+This function separates each word of the RString in to an element of a list of strings.
+
+The syntax:
+```c++
+String my_string = "Hello\nWorld";
+
+std::cout << lines(my_string) << std::endl;
+```
+Will produce:  
+> [Hello,World]  
+
+---
+
+## unlines
+```c++
+RString unlines(const RList<RString>& to_be_unlined)
+```
+
+to_be_unlined: List of Strings to be unlined.
+
+This function reverses the lines function.
+
+The syntax:
+```c++
+RList<RString> my_string_list;
+RString my_string = "Hello";
+
+my_string_list.append(my_string);
+my_string = "World";
+my_string_list.append(my_string);
+
+std::cout << my_string_list << std::endl;
+std::cout << unlines(my_string_list) << std::endl;
+```
+Will produce:
+> [Hello,World]
+> Hello  
+> World  
+
+---
+
+## unwords
+```c++
+RString unwords(const RList<RString>& to_be_unworded)
+```
+
+to_be_unworded: List of Strings to be unworded.
+
+This function reverses the words function.
+
+The syntax:
+```c++
+RList<RString> my_string_list;
+RString my_string = "Hello";
+
+my_string_list.append(my_string);
+my_string = "World";
+my_string_list.append(my_string);
+
+std::cout << my_string_list << std::endl;
+std::cout << unwords(my_string_list) << std::endl;
+```
+Will produce:
+> [Hello,World]
+> Hello World
+
+---
+
 ## map_on
 ```c++
 RList<T> map_on(T (*f)(T), const RList<T> &list_to_be_mapped)
@@ -1024,8 +1177,30 @@ May throw the error(s):
 
 ---
 
-## zip
+## words
+```c++
+RList<RString> words(const RList<T> &to_be_worded)
 ```
+
+to_be_worded: The list to have its words mapped to elements in the return list.
+
+This function separates each word of the RString in to an element of a list of strings.
+
+The syntax:
+```c++
+String my_string = "Hello World";
+
+std::cout << words(my_string) << std::endl;
+```
+Will produce:  
+> [Hello,World]  
+
+---
+
+---
+
+## zip
+```c++
 RList< Tuple<T,S> > zip(const RList<T> &list_1, const RList<S> &list_2)
 ```
 
