@@ -59,7 +59,7 @@ RList<T> tail(const RList<T> &list_to_be_tailed);
 
 RString unlines(const RList<RString>& to_be_unlined);
 
-RString unwords(const RList<RString>& to_be_unworded);
+RString unwords(const RList<RString>& to_be_unlined);
 
 RList<RString> words(const RString& to_be_worded);
 
@@ -256,6 +256,9 @@ public:
 // RString
 class RString : public RList<char>{
 public:
+        RString();
+        RString(const char array_of_chars[]);
+
         virtual void operator=(const char array_of_chars[]);
 
         virtual void to_upper();
@@ -266,6 +269,8 @@ public:
 // String
 class String : public RString{
 public:
+        String();
+        String(const char array_of_chars[]);
         ~String();
         void operator=(const char array_of_chars[]);
         // COMEHERE
@@ -350,7 +355,7 @@ bool RList<T>::operator==(const RList<T> &list_to_be_compared){
                 bool is_equal = true;
                 for(int i = 0; i < this_length && is_equal; i++)
                 {
-                        is_equal = (this->value_at(i) != list_to_be_compared.value_at(i));
+                        is_equal = (this->value_at(i) == list_to_be_compared.value_at(i));
 
                 }
                 return is_equal;
@@ -894,7 +899,7 @@ bool List<T>::operator==(const List<T> &list_to_be_compared){
                 bool is_equal = true;
                 for(int i = 0; i < this_length && is_equal; i++)
                 {
-                        is_equal = (this->value_at(i) != list_to_be_compared.value_at(i));
+                        is_equal = (this->value_at(i) == list_to_be_compared.value_at(i));
 
                 }
                 return is_equal;
@@ -1064,8 +1069,22 @@ S Tuple<T,S>::right() const{
 // --------------------------------------------------------------------
 
 /* RString operators */
+inline RString::RString(){
+                this->first_node = NULL;
+        }
+
+inline RString::RString(const char array_of_chars[]){
+                int i = 0;
+                while(array_of_chars[i] != '\0')
+                {
+                        this->append(array_of_chars[i]);
+                        i++;
+                }
+        }
+
 inline void RString::operator=(const char array_of_chars[]){
         int i = 0;
+        this->delete_all();
         while(array_of_chars[i] != '\0')
         {
                 this->append(array_of_chars[i]);
@@ -1099,8 +1118,25 @@ inline void RString::to_lower(){
 
 // --------------------------------------------------------------------
 
+inline String::String(){
+                this->first_node = NULL;
+        }
+inline String::String(const char array_of_chars[]){
+                int i = 0;
+                while(array_of_chars[i] != '\0')
+                {
+                        this->append(array_of_chars[i]);
+                        i++;
+                }
+        }
+inline String::~String(){
+                this->delete_all();
+        }
+
+
 inline void String::operator=(const char array_of_chars[]){
         int i = 0;
+        this->delete_all();
         while(array_of_chars[i] != '\0')
         {
                 this->append(array_of_chars[i]);
@@ -1110,10 +1146,6 @@ inline void String::operator=(const char array_of_chars[]){
 inline void String::operator=(const RString& copy_rstring){
         this->delete_all();
         this->first_node = copy_rstring.first_address();
-}
-
-inline String::~String(){
-        this->delete_all();
 }
 
 // --------------------------------------------------------------------
@@ -1309,12 +1341,12 @@ inline RString unlines(const RList<RString>& to_be_unlined){
 }
 
 // unwords
-inline RString unwords(const RList<RString>& to_be_unworded){
-        int list_length = to_be_unworded.length();
+inline RString unwords(const RList<RString>& to_be_unlined){
+        int list_length = to_be_unlined.length();
         RString return_string;
         for(int i = 0; i < list_length; i++)
         {
-                return_string.append_list(to_be_unworded[i]);
+                return_string.append_list(to_be_unlined[i]);
                 if(i < list_length - 1)
                 {
                         return_string.append(' ');
