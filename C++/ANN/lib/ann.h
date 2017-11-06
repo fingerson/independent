@@ -61,6 +61,8 @@ public:
 
 	void feed(Real entry);
 
+	void feed_forward(Real entry);
+
 	void forward(void);
 
 	void load_network(const char* folder_address);

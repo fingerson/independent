@@ -155,6 +155,17 @@ Neural_Network::feed(Real entry)
 	last_fed++;
 }
 
+void
+Neural_Network::feed_forward(Real entry)
+{
+	if(this->last_fed >= this->width[0])
+	{
+		this->forward();
+	}
+	this->network[0][last_fed].out = entry;
+	last_fed++;
+}
+
 // forward
 void
 Neural_Network::forward(void)
