@@ -72,6 +72,63 @@ Neural_Network::Neuron::set_number_of_inputs(const Integer inputs)
 
 // NEURAL_NETWORK CLASS
 
+// Neural Network constructor from config file (WORKS WITH FILES)
+Neural_Network::Neural_Network(const char*	config_folder)
+{
+	// Initializing constrainer function pointer
+	this->constrainer = default_constrainer;
+
+	// Initializing last_fed index;
+	this->last_fed = 0;
+
+	std::string file_name(config_folder);
+	file_name += "neural_settings.config";
+	std::ifstream conf_file(file_name.c_str());
+	if(conf_file.is_open())
+	{
+		conf_file >> this->depth;
+		this->width = new Integer[depth];
+		for(Integer i = 0; i < this->depth; i++)
+		{
+			conf_file >> this->width[i];
+		}
+
+		// Initializing the results vector;
+		this->results =new Real[this->width[this->depth-1]];
+		for(Integer i=0; i< this->width[this->depth-1]; i++)
+		{
+			this->results[i] = 0.0;
+		}
+
+		// Initializing the neurons
+		this->network = new Neuron*[this->depth];
+		for(Integer i = 0; i < this->depth; i++)
+		{
+
+			this->network[i] =
+			new Neuron[this->width[i]];
+
+			for(Integer j = 0; j < this->width[i]; j++)
+			{
+				Integer inputs = 1;
+				if(!i)
+				{
+					inputs = this->width[i-1];
+				}
+				this->network[i][j].
+				set_number_of_inputs(inputs);
+			}
+		}
+
+		this->load_network(config_folder);
+
+	}
+	else
+	{
+		// Error opening file
+	}
+}
+
 // Neural Netwok constructor
 Neural_Network::Neural_Network(const Integer	def_depth,
 	       		       const Integer 	def_width[])
@@ -107,16 +164,13 @@ Neural_Network::Neural_Network(const Integer	def_depth,
 
 		for(Integer j = 0; j < def_width[i]; j++)
 		{
-			if(i)
+			Integer inputs = 1;
+			if(!i)
 			{
-				network[i][j].set_number_of_inputs(
-						1);
+				inputs = def_width[i-1];
 			}
-			else
-			{
-				network[i][j].set_number_of_inputs(
-						def_width[i-1]);
-			}
+			network[i][j].set_number_of_inputs(
+						inputs);
 
 		}
 	}
@@ -284,6 +338,7 @@ Neural_Network::run(void)
 void
 Neural_Network::save_network(const char* folder_address)
 {
+	// Saving each neuron setting
 	for(Integer i = 0; i < this->depth; i++)
 	{
 		for(Integer j = 0; j < this->width[i]; j++)
@@ -305,6 +360,24 @@ Neural_Network::save_network(const char* folder_address)
 			this->network[i][j].save_in_file(
 				folder.c_str(), number_of_inputs);
 		}
+	}
+
+	// Saving configurations
+	std::string conf_file_name(folder_address);
+	conf_file_name += "neural_settings.config";
+	std::ofstream conf_file(conf_file_name.c_str());
+	if(conf_file.is_open())
+	{
+		conf_file << this->depth << " ";
+		for(int i = 0; i < this->depth; i++)
+		{
+			conf_file << this->width[i] << " ";
+		}
+		conf_file << folder_address << '\\';
+	}
+	else
+	{
+		// Error opening file
 	}
 
 }

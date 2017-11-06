@@ -52,7 +52,7 @@ public:
 	// The results of the last layer
 	Real*		results;
 
-
+	Neural_Network(const char*	config_file);
 	Neural_Network(const Integer	def_depth,
 		       const Integer 	def_width[]);
 	~Neural_Network();
