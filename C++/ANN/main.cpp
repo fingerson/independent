@@ -3,22 +3,38 @@
 
 using namespace std;
 
-Real my_constrainer(Real arg)
+Real relu(Real arg)
 {
-	//return arg;
-	return (arg <= 0) ? 0 : 1;
+	return ((arg > 0) ? arg : 0);
+}
+
+Real relu_dvt(Real arg)
+{
+	return ((arg > 0) ? 1 : 0);
 }
 
 int main()
 {
 	int wid[3] = {2,3,1};
 	Neural_Network nxor("./config/");
-	nxor.overwrite_constrainer_function(my_constrainer);
+	nxor.overwrite_constrainer_function(relu, relu_dvt);
 
-	nxor.feed_forward(1.0);
-	nxor.feed_forward(0.0);
-	nxor.run();
+	Real des_out[1] = {0.5};
+	Real des_inp[2] = {0.5, 0.5};
 
-	cout << nxor.results[0] << endl;
+	Real evar;
+	evar = nxor.learn(des_inp, des_out);
+	cout << "Total error: " << evar << endl;
+	cout << endl;
+
+	for(int i = 0; i < 0; i++)
+	{
+		nxor.learn(des_inp, des_out);
+		nxor.update_neurons();
+	}
+
+	evar = nxor.learn(des_inp, des_out);
+	cout << "Total error: " << evar << endl;
+	cout << endl;
 	return 0;
 }
