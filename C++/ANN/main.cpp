@@ -1,40 +1,75 @@
 #include <iostream>
 #include "ann.h"
 
+
 using namespace std;
 
-Real relu(Real arg)
+Real foo(Real a)
 {
-	return ((arg > 0) ? arg : 0);
+	return 1 - a;
+	return 1/(1 + exp(-a));
 }
 
-Real relu_dvt(Real arg)
+Real bar(Real a[])
 {
-	return ((arg > 0) ? 1 : 0);
+	//return 10;
+	Real ret = foo(a[0]);
+	return ret*ret;
 }
 
 int main()
 {
-	int wid[3] = {2,3,1};
-	Neural_Network nxor("./config/");
-	nxor.overwrite_constrainer_function(relu, relu_dvt);
+	int wid[4] = {1, 10, 10, 1};
+	Neural_Network neu(4, wid);
 
-	Real des_out[1] = {0.5};
-	Real des_inp[2] = {0.5, 0.5};
+	Real a[1];
+	a[0] = 0.5;
+	cout << "Bar of 0.5 = " << bar(a) << endl;
+	neu.feed(0.5);
+	neu.run();
+	cout << "Neural network for 0.5 = " << neu.results[0] << endl;
 
-	Real evar;
-	evar = nxor.learn(des_inp, des_out);
-	cout << "Total error: " << evar << endl;
-	cout << endl;
 
-	for(int i = 0; i < 0; i++)
+	int j = 0;
+	for(int k = 0; k < 1000; k++)
 	{
-		nxor.learn(des_inp, des_out);
-		nxor.update_neurons();
-	}
+		for(Real i = 0; i < 1; i += 0.0001)
+		{
+			Real inp[1];
+			Real outp[1];
 
-	evar = nxor.learn(des_inp, des_out);
-	cout << "Total error: " << evar << endl;
-	cout << endl;
+			inp[0] = i;
+			outp[0] = bar(inp);
+
+			Real evar = neu.learn(inp, outp);
+			if(evar < -100)
+			{
+				cout << "Evar = " << evar << endl;
+				cout << "Break at " << i << endl;
+				i = 10.0;
+			}
+			if((i < -1.99 || i > 6.99 ) && 0)
+			{
+				cout << "Error = ";
+				cout << evar << endl;
+			}
+
+			if(j > 1000)
+			{
+				neu.update_neurons();
+				j = 0;
+			}
+			else
+			{
+				j++;
+			}
+		}
+	}
+	//eu.print_all_neurons();
+	cout << "Bar of 0.5 = " << bar(a) << endl;
+	neu.feed(0.5);
+	neu.run();
+	cout << "Neural network for 0.5 = " << neu.results[0] << endl;
+
 	return 0;
 }

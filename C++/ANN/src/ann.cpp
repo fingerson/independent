@@ -1,30 +1,21 @@
 #include "ann.h"
 
-namespace{
+namespace
+{
+	const 	Real scalar_step = (Real) 1;
 	// OTHER FUNCTIONS
 
-	// default_constrainer
-	Real
-	default_constrainer(Real argument)
+	// Default Constrainer ReLu function
+	Real sig(Real arg)
 	{
-		if(argument <= 0.0)
-		{
-			return 0.0;
-		}
-		else
-		{
-			return argument/(argument + 1);
-		}
+		return 1/(1 + exp(-arg));
 	}
 
-	Real
-	default_constrainer_derivative(Real argument)
+	// Default Constrainer derivative Sigmoid function
+	Real sig_dvt(Real arg)
 	{
-		if(argument < 0)
-		{
-			return (Real) 0;
-		}
-		return 1/((argument + 1)*(argument + 1));
+		Real ea = exp(arg);
+		return ea/((1 + ea)*(1+ea));
 	}
 
 	Real
@@ -36,7 +27,7 @@ namespace{
 	Real
 	bias_initialzer(void)
 	{
-		return (Real) 1;
+		return (Real) 0;
 	}
 
 	Real
@@ -124,10 +115,12 @@ void
 Neural_Network::Neuron::update(Integer inputs)
 {
 	this->bias -= scalar_step*this->bias_avg_dvt;
+	this->bias_avg_dvt = (Real) 0;
 	for(Integer i = 0; i < inputs; i++)
 	{
 		this->weigth[i] -= scalar_step *
 				   this->weigth_avg_dvt[i];
+		this->weigth_avg_dvt[i] = (Real) 0;
 	}
 }
 
@@ -137,11 +130,10 @@ Neural_Network::Neuron::update(Integer inputs)
 Neural_Network::Neural_Network(const char*	config_folder)
 {
 	// Initializing constrainer function pointer
-	this->constrainer = default_constrainer;
+	this->constrainer = sig;
 
 	// Initializing the constrainer derivative function pointer
-	this->constrainer_derivative =
-	default_constrainer_derivative;
+	this->constrainer_derivative = sig_dvt;
 
 	// Initializing last_fed index;
 	this->last_fed = 0;
@@ -202,11 +194,10 @@ Neural_Network::Neural_Network(const Integer	def_depth,
 	       		       const Integer 	def_width[])
 {
 	// Initializing constrainer function pointer
-	this->constrainer = default_constrainer;
+	this->constrainer = sig;
 
 	// Initializing the constrainer derivative function pointer
-	this->constrainer_derivative =
-	default_constrainer_derivative;
+	this->constrainer_derivative = sig_dvt;
 
 	// Initializing last_fed index;
 	this->last_fed = 0;
@@ -227,7 +218,7 @@ Neural_Network::Neural_Network(const Integer	def_depth,
 	this->results = new Real[def_width[def_depth - 1]];
 	for(Integer i = 0; i < def_width[def_depth - 1]; i++)
 	{
-		this->results[i] = 0.0;
+		this->results[i] = (Real) 0;
 	}
 
 	// Initializing the neurons
@@ -240,11 +231,11 @@ Neural_Network::Neural_Network(const Integer	def_depth,
 		for(Integer j = 0; j < def_width[i]; j++)
 		{
 			Integer inputs = 1;
-			if(!i)
+			if(i != 0)
 			{
 				inputs = def_width[i-1];
 			}
-			network[i][j].set_number_of_inputs(
+			this->network[i][j].set_number_of_inputs(
 						inputs);
 
 		}
@@ -252,23 +243,23 @@ Neural_Network::Neural_Network(const Integer	def_depth,
 
 }
 
-// Neural Network destructor
-Neural_Network::~Neural_Network()
-{
-	for(Integer i = 0; i < this->depth; i++)
-	{
-		for(Integer j = 0; j < this->width[i]; j++)
-		{
-			this->network[i][j].~Neuron();
-		}
-	}
-	delete [] this->network;
-	delete [] this->results;
-	delete [] this->width;
-
-	this->depth = (Integer) 0;
-	this->last_fed = (Integer) 0;
-}
+// // Neural Network destructor
+// Neural_Network::~Neural_Network()
+// {
+// 	for(Integer i = 0; i < this->depth; i++)
+// 	{
+// 		for(Integer j = 0; j < this->width[i]; j++)
+// 		{
+// 			this->network[i][j].~Neuron();
+// 		}
+// 	}
+// 	delete [] this->network;
+// 	delete [] this->results;
+// 	delete [] this->width;
+//
+// 	this->depth = (Integer) 0;
+// 	this->last_fed = (Integer) 0;
+// }
 
 // clear
 void
@@ -356,12 +347,11 @@ Neural_Network::learn(Real input_array[], Real desired_output[])
 		this->feed(input_array[i]);
 	}
 	this->run();
-	Real error = (Real) 0;
-	Integer i;
 
 	// Calculating the total error
 	// Attributing last layer neurons' back derivative
-	for(i = 0; i < this->width[this->depth - 1]; i++)
+	Real error = (Real) 0;
+	for(Integer i = 0; i < this->width[this->depth - 1]; i++)
 	{
 		Real single_neuron_error = this->results[i] -
 					   desired_output[i];
@@ -461,6 +451,19 @@ Neural_Network::overwrite_constrainer_function(Real (*foo)(Real),
 {
 	this->constrainer = foo;
 	this->constrainer_derivative = dvt;
+}
+
+void
+Neural_Network::print_all_neurons(void)
+{
+	for(Integer i = 0; i < this->depth; i++)
+	{
+		for(Integer j = 0; j < this->width[i]; j++)
+		{
+			print_neuron(i,j);
+			std::cout << std::endl;
+		}
+	}
 }
 
 // print_neuron
@@ -633,9 +636,11 @@ Neural_Network::set_weight_at_neuron(Integer	layer,
 void
 Neural_Network::update_neurons(void)
 {
+	// this->print_all_neurons();
+	this->learn_runs = (Integer) 0;
 	for(Integer i = 1; i < this->depth; i++)
 	{
-		for(Integer j = 1; j < this->width[i]; j++)
+		for(Integer j = 0; j < this->width[i]; j++)
 		{
 			this->network[i][j]
 			.update(this->width[i - 1]);

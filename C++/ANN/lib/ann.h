@@ -7,14 +7,15 @@
 #include <sstream> // For string stream
 #include <iostream> // cin and cout
 #include <fstream> // reading and writing from and to files
+#include <cmath> // For expsig
 
 typedef int 	Integer;
 typedef	float 	Real;
 
-namespace{
-	const 	Real scalar_step = (Real) 1;
-	Real 	default_constrainer(Real argument);
-	Real 	default_constrainer_derivative(Real argument);
+namespace
+{
+	Real 	sig(Real argument);
+	Real 	sig_dvt(Real argument);
 	Real 	weigth_initializer(void);
 	Real 	bias_initialzer(void);
 	Real 	out_initializer(void);
@@ -86,7 +87,7 @@ public:
 	Neural_Network(const Integer	def_depth,
 		       const Integer 	def_width[]);
 
-        ~Neural_Network();
+        //~Neural_Network();
 
 	void clear(void);
 
@@ -100,6 +101,8 @@ public:
 
 	void overwrite_constrainer_function(Real (*foo)(Real),
 					    Real (*dvt)(Real));
+
+	void print_all_neurons(void);
 
 	void print_neuron(Integer layer, Integer position);
 

@@ -13,10 +13,10 @@ main: obj main.cpp
 ann: obj ./src/ann.cpp ./lib/ann.h
 	g++ -I./lib -g -c ./src/ann.cpp -o ./obj/ann.o
 
-run:
+run: output
 	./bin/output
 
-debug:
+debug: output
 	gdb ./bin/output
 
 clean:
