@@ -17,6 +17,12 @@ Out_t foo(Out_t a)
 
 int main()
 {
+	Neural_Network neu("./config/sinc.bin");
 
+	for(Out_t i = 0.0; i < 1.0; i += 0.01)
+	{
+		neu.feed_run(i);
+		cout << i << "    " << neu.results(0) << endl;
+	}
 	return 0;
 }
