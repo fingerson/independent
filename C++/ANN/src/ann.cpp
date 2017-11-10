@@ -2,648 +2,562 @@
 
 namespace
 {
-	const 	Real scalar_step = (Real) 1;
-	// OTHER FUNCTIONS
-
-	// Default Constrainer ReLu function
-	Real sig(Real arg)
+	// sig
+	Out_t
+	sig(Real_t pre_constrain)
 	{
-		return 1/(1 + exp(-arg));
+		// return ((pre_constrain > 0) ? pre_constrain : 0);
+		return (max_out - min_out) /
+		       (1 + exp(-pre_constrain)) +
+		       min_out;
 	}
 
-	// Default Constrainer derivative Sigmoid function
-	Real sig_dvt(Real arg)
+	// sig_dvt
+	Real_t
+	sig_dvt(Real_t pre_constrain)
 	{
-		Real ea = exp(arg);
-		return ea/((1 + ea)*(1+ea));
+		// return ((pre_constrain > 0) ? 1 : 0);
+		Real_t exp_arg = 1 + exp(pre_constrain);
+		return (max_out - min_out) *
+		       (exp_arg - 1) /
+		       (exp_arg * exp_arg);
 	}
 
-	Real
-	weigth_initializer(void)
+	// weight_init
+	Real_t
+	weight_init()
 	{
-		return (Real) 1;
-	}
-
-	Real
-	bias_initialzer(void)
-	{
-		return (Real) 0;
-	}
-
-	Real
-	out_initializer(void)
-	{
-		return (Real) 0;
+		return 1;
+		// return (rand()%50000)/50000.0 - 0.5;
 	}
 
 }
-
 // NEURON CLASS
 
 // Neuron constructor
 Neural_Network::Neuron::Neuron()
 {
-	this->self_dvt = (Real) 0;
-	this->back_dvt = (Real) 0;
-	this->out = out_initializer();
-	this->bias = bias_initialzer();
+	this->out      =   (Out_t) 0;
+	this->bias     =   weight_init() - 1;
+
+	this->bias_dvt =  (Real_t) 0;
+	this->self_dvt =  (Real_t) 0;
+	this->back_dvt =  (Real_t) 0;
+
+	this->in_size  = (Index_t) 0;
 }
 
 // Neuron destructor
 Neural_Network::Neuron::~Neuron()
 {
-	delete [] this->weigth;
+	delete [] this->weight_dvt;
+	delete [] this->weight;
+	delete [] this->in;
+
+	this->in_size = (Index_t) 0;
+	this->ready_in = (Index_t) 0;
 }
 
-// load_from_file (WORKS WITH FILES)
+// setup
 void
-Neural_Network::Neuron::load_from_file(const char* file_name,
-				       Integer number_of_inputs)
+Neural_Network::Neuron::setup(Index_t inputs)
 {
-	std::ifstream conf_file(file_name);
-	if(conf_file.is_open())
-	{
-		conf_file >> this->bias;
+	this->in_size    = inputs;
 
-		for(Integer i = 0; i < number_of_inputs; i++)
-		{
-			conf_file >> this->weigth[i];
-		}
-		conf_file.close();
-	}
-	else
+	this->weight 	 = new Real_t[inputs];
+	this->weight_dvt = new Real_t[inputs];
+	this->in	 = new  Out_t[inputs];
+
+	for(Index_t i = 0; i < inputs; i++)
 	{
-		// Error opening file;
+		this->weight[i]     = weight_init();
+		this->weight_dvt[i] = (Real_t) 0;
 	}
 }
 
-// save_in_file (WORKS WITH FILES)
+
+// activate
 void
-Neural_Network::Neuron::save_in_file(const char* file_name,
-				     Integer number_of_inputs)
+Neural_Network::Neuron::activate()
 {
-	std::ofstream config_file(file_name);
-	if(config_file.is_open())
+	// Ensures the deactivation of the derivatives
+	// this->deactivate();
+
+	this->ready_in = (Index_t) 0;
+	Real_t	pre_constrain = (Real_t) 0;
+	for(Index_t i = 0; i < this->in_size; i++)
 	{
-		config_file << this->bias << " ";
-		for(Integer i = 0; i < number_of_inputs; i++)
-		{
-			config_file << this->weigth[i] << " ";
-		}
-		config_file.close();
+		pre_constrain += this->weight[i] * this->in[i];
 	}
-	else
-	{
-		// Error opening file
-	}
+	pre_constrain += this->bias;
+	this->self_dvt = sig_dvt(pre_constrain);
+	this->out      = sig(pre_constrain);
 }
 
-// set_number_of_inputs
+// deactivate
 void
-Neural_Network::Neuron::set_number_of_inputs(const Integer inputs)
+Neural_Network::Neuron::deactivate()
 {
-	this->weigth = new Real[inputs];
-	this->weigth_avg_dvt = new Real[inputs];
-	for(Integer i = 0; i < inputs; i++)
-	{
-		this->weigth[i] = weigth_initializer();
-		this->weigth_avg_dvt[i] = (Real) 0;
-	}
-}
-
-void
-Neural_Network::Neuron::update(Integer inputs)
-{
-	this->bias -= scalar_step*this->bias_avg_dvt;
-	this->bias_avg_dvt = (Real) 0;
-	for(Integer i = 0; i < inputs; i++)
-	{
-		this->weigth[i] -= scalar_step *
-				   this->weigth_avg_dvt[i];
-		this->weigth_avg_dvt[i] = (Real) 0;
-	}
-}
-
-// NEURAL_NETWORK CLASS
-
-// Neural Network constructor from config file (WORKS WITH FILES)
-Neural_Network::Neural_Network(const char*	config_folder)
-{
-	// Initializing constrainer function pointer
-	this->constrainer = sig;
-
-	// Initializing the constrainer derivative function pointer
-	this->constrainer_derivative = sig_dvt;
-
-	// Initializing last_fed index;
-	this->last_fed = 0;
-
-	// Initializing the learn runs;
-	this->learn_runs = 0;
-
-	std::string file_name(config_folder);
-	file_name += "neural_settings.config";
-	std::ifstream conf_file(file_name.c_str());
-	if(conf_file.is_open())
-	{
-		conf_file >> this->depth;
-		this->width = new Integer[depth];
-		for(Integer i = 0; i < this->depth; i++)
-		{
-			conf_file >> this->width[i];
-		}
-
-		// Initializing the results vector;
-		this->results =new Real[this->width[this->depth-1]];
-		for(Integer i=0; i< this->width[this->depth-1]; i++)
-		{
-			this->results[i] = 0.0;
-		}
-
-		// Initializing the neurons
-		this->network = new Neuron*[this->depth];
-		for(Integer i = 0; i < this->depth; i++)
-		{
-
-			this->network[i] =
-			new Neuron[this->width[i]];
-
-			for(Integer j = 0; j < this->width[i]; j++)
-			{
-				Integer inputs = 1;
-				if(!i)
-				{
-					inputs = this->width[i-1];
-				}
-				this->network[i][j].
-				set_number_of_inputs(inputs);
-			}
-		}
-		conf_file.close();
-		this->load_network(config_folder);
-
-	}
-	else
-	{
-		// Error opening file
-	}
-}
-
-// Neural Network constructor
-Neural_Network::Neural_Network(const Integer	def_depth,
-	       		       const Integer 	def_width[])
-{
-	// Initializing constrainer function pointer
-	this->constrainer = sig;
-
-	// Initializing the constrainer derivative function pointer
-	this->constrainer_derivative = sig_dvt;
-
-	// Initializing last_fed index;
-	this->last_fed = 0;
-
-	// Initializing the learn runs;
-	this->learn_runs = 0;
-
-	// Initialing the saved depth;
-	this->depth = def_depth;
-
-	// Initializing the depth vector;
-	this->width = new Integer[def_depth];
-	std::memcpy(this->width,
-		    def_width,
-		    sizeof(Integer)*def_depth);
-
-	// Initializing the results vector;
-	this->results = new Real[def_width[def_depth - 1]];
-	for(Integer i = 0; i < def_width[def_depth - 1]; i++)
-	{
-		this->results[i] = (Real) 0;
-	}
-
-	// Initializing the neurons
-	this->network = new Neuron*[def_depth];
-	for(Integer i = 0; i < def_depth; i++)
-	{
-
-		this->network[i] = new Neuron[def_width[i]];
-
-		for(Integer j = 0; j < def_width[i]; j++)
-		{
-			Integer inputs = 1;
-			if(i != 0)
-			{
-				inputs = def_width[i-1];
-			}
-			this->network[i][j].set_number_of_inputs(
-						inputs);
-
-		}
-	}
-
-}
-
-// // Neural Network destructor
-// Neural_Network::~Neural_Network()
-// {
-// 	for(Integer i = 0; i < this->depth; i++)
-// 	{
-// 		for(Integer j = 0; j < this->width[i]; j++)
-// 		{
-// 			this->network[i][j].~Neuron();
-// 		}
-// 	}
-// 	delete [] this->network;
-// 	delete [] this->results;
-// 	delete [] this->width;
-//
-// 	this->depth = (Integer) 0;
-// 	this->last_fed = (Integer) 0;
-// }
-
-// clear
-void
-Neural_Network::clear(void)
-{
-	for(int i = 0; i < this->depth; i++)
-	{
-		for(int j = 0; j < this->width[i]; j++)
-		{
-			this->network[i][j].out = (Real) 0;
-			this->network[i][j].self_dvt = (Real) 0;
-			this->network[i][j].back_dvt = (Real) 0;
-		}
-	}
+	this->self_dvt = (Real_t) 0;
+	this->back_dvt = (Real_t) 0;
+	// this->out = (Out_t) 0;
 }
 
 // feed
 void
-Neural_Network::feed(Real entry)
+Neural_Network::Neuron::feed(Out_t input)
 {
-	if(this->last_fed >= this->width[0])
+	if(this->ready_in < this->in_size)
+	{
+		this->in[this->ready_in] = input;
+		this->ready_in++;
+	}
+}
+
+// update_dvt
+void
+Neural_Network::Neuron::update_dvt(Index_t current_runs)
+{
+	this->bias_dvt = (this->bias_dvt*current_runs +
+			  this->self_dvt * this->back_dvt)/
+			  (current_runs + 1);
+
+	for(Index_t i = 0; i < this->in_size; i++)
+	{
+		this->weight_dvt[i] = (this->weight_dvt[i] *
+			 	       current_runs +
+				       this->self_dvt *
+				       this->back_dvt *
+				       this->in[i]) /
+				      (current_runs + 1);
+	}
+}
+
+// transfer_dvt
+Real_t
+Neural_Network::Neuron::transfer_dvt(Index_t back_layer_position)
+{
+	return this->weight[back_layer_position] *
+	       this->self_dvt *
+	       this->back_dvt;
+}
+
+// update_parameters
+void
+Neural_Network::Neuron::update_parameters()
+{
+	this->bias -= scalar_step*bias_dvt;
+	this->bias_dvt = (Real_t) 0;
+
+	for(Index_t i = 0; i < this->in_size; i++)
+	{
+		this->weight[i] -= scalar_step*this->weight_dvt[i];
+		this->weight_dvt[i] = (Real_t) 0;
+	}
+}
+
+// write_in_bin_file
+void
+Neural_Network::Neuron::write_in_bin_file(std::ofstream& file)
+{
+	// Writing weights
+	file.write(reinterpret_cast<const char *>(this->weight),
+	 	   this->in_size*sizeof(Real_t));
+
+	// Writing bias
+	file.write(reinterpret_cast<const char *>(&(this->bias)),
+	 	   sizeof(Real_t));
+}
+
+// read_from_bin_file
+void
+Neural_Network::Neuron::read_from_bin_file(std::ifstream& file)
+{
+	// Reading the weights
+	file.read(reinterpret_cast<char *>(this->weight),
+		  this->in_size * sizeof(Real_t));
+
+	// Reading the bias
+	file.read(reinterpret_cast<char *>(&(this->bias)),
+	 	  sizeof(Real_t));
+}
+
+// NEURAL NETWORK CLASS
+
+// Neural_Network constructor
+Neural_Network::Neural_Network(Index_t d_depth, Index_t* d_width)
+{
+	this->init(d_depth, d_width);
+}
+
+// Neural_Network from file constructor
+Neural_Network::Neural_Network(const char file_name[])
+{
+	std::ifstream bin_file;
+	bin_file.open(file_name, std::ios::binary | std::ios::in);
+
+	if(!bin_file.is_open())
 	{
 		return;
 	}
 
-	this->network[0][last_fed].out = entry;
-	last_fed++;
-}
-
-// feed forward
-void
-Neural_Network::feed_forward(Real entry)
-{
-	if(this->last_fed >= this->width[0])
+	// Checking if the size of the typedefs is valid
 	{
-		this->forward();
-	}
-	this->network[0][last_fed].out = entry;
-	last_fed++;
-}
+		char type_size;
+		// Reading Index_t size
+		bin_file.read(&type_size, sizeof(char));
 
-// forward
-void
-Neural_Network::forward(void)
-{
-	this->last_fed = 0;
-	for(Integer i = 0; i < this->width[this->depth - 1]; i++)
-	{
-		results[i] = this->network[this->depth - 1][i].out;
-		this->network[this->depth - 1][i].out = 0;
-	}
-
-	for(Integer i = this->depth - 1; i > 0; i--)
-	{
-		for(Integer j = 0; j < this->width[i]; j++)
+		if(type_size != sizeof(Index_t))
 		{
-			Real pre_constrain = (Real) 0;
-			for(Integer k = 0; k < this->width[i - 1]; k++)
-			{
-				pre_constrain +=
-				this->network[i][j].weigth[k] *
-				this->network[i - 1][k].out;
-			}
-			pre_constrain += this->network[i][j].bias;
-			this->network[i][j].self_dvt =
-			this->constrainer_derivative(pre_constrain);
-			this->network[i][j].out =
-			this->constrainer(pre_constrain);
+			return;
+			// Type incongruence;
 		}
 
-		// Free last layer
-		for(Integer j = 0; j < this->width[i - 1]; j++)
+		// Reading Real_t size
+		bin_file.read(&type_size, sizeof(char));
+		if(type_size != sizeof(Real_t))
 		{
-			this->network[i - 1][j].out = 0.0;
+			return;
+			// Type incongruence;
+		}
+
+		// Reading Out_t size
+		bin_file.read(&type_size, sizeof(char));
+		if(type_size != sizeof(Out_t))
+		{
+			return;
+			// Type incongruence;
 		}
 	}
-}
 
-// learn
-Real
-Neural_Network::learn(Real input_array[], Real desired_output[])
-{
-	for(Integer i = 0; i < this->width[0]; i++)
+	// Initializing the neural network
 	{
-		this->feed(input_array[i]);
+		std::cout << "HERE" << std::endl;
+		// Loading up the depth element
+		Index_t def_depth;
+		bin_file.read(
+			reinterpret_cast<char *>(&def_depth),
+			sizeof(Index_t));
+
+		// Creating an array to hold the weights
+		Index_t* def_width = new Index_t[def_depth];
+		// Loading the array with the widths
+		bin_file.read(
+			reinterpret_cast<char *>(def_width),
+			def_depth*sizeof(Index_t));
+
+		this->init(def_depth, def_width);
+
+		delete [] def_width;
 	}
-	this->run();
 
-	// Calculating the total error
-	// Attributing last layer neurons' back derivative
-	Real error = (Real) 0;
-	for(Integer i = 0; i < this->width[this->depth - 1]; i++)
+	for(Index_t i = 0; i < this->depth; i++)
 	{
-		Real single_neuron_error = this->results[i] -
-					   desired_output[i];
-		this->network[this->depth - 1][i].back_dvt =
-		single_neuron_error;
-
-		error += single_neuron_error * single_neuron_error;
-	}
-	error /= 2;
-
-	for(Integer i = this->depth - 1; i >= 1; i--)
-	{
-		for(Integer j = 0; j < this->width[i]; j++)
+		for(Index_t j = 0; j < this->width[i]; j++)
 		{
-			for(Integer k = 0; k< this->width[i-1]; k++)
-			{
-				// Updating back derivative of the
-				// previous layer
-				if(i != 1)
-				{
-					this->network[i-1][k]
-					.back_dvt +=
-					this->network[i][j]
-					.self_dvt *
-					this->network[i][j]
-					.back_dvt *
-					this->network[i][j]
-					.weigth[k];
-				}
-
-				// Updating weigth derivative
-				this->network[i][j].weigth_avg_dvt
-				[k] *= this->learn_runs;
-
-				this->network[i][j].weigth_avg_dvt
-				[k] += this->network[i][j].self_dvt*
-				this->network[i][j].back_dvt *
-				this->network[i-1][k].out;
-
-				this->network[i][j].weigth_avg_dvt
-				[k] /= (this->learn_runs + 1);
-			}
-			// Updating the bias derivative
-			this->network[i][j].bias_avg_dvt *=
-			this->learn_runs;
-
-			this->network[i][j].bias_avg_dvt +=
-			(this->network[i][j].self_dvt *
-			 this->network[i][j].back_dvt);
-
-			this->network[i][j].bias_avg_dvt /=
-			(this->learn_runs + 1);
-		}
-	}
-	this->learn_runs++;
-
-	return error;
-}
-
-// load_network
-void
-Neural_Network::load_network(const char* folder_address)
-{
-	for(Integer i = 0; i < this->width[0]; i++)
-	{
-		Real w0[1] = {(Real) 1};
-		this->set_weight_at_neuron(0, i, w0, (Real) 0);
-	}
-	for(Integer i = 1; i < this->depth; i++)
-	{
-		for(Integer j = 0; j < this->width[i]; j++)
-		{
-			std::string folder(folder_address);
-			{
-				std::ostringstream str1;
-				str1 << "nl"
-				     << i
-				     << "p"
-				     << j;
-				folder += str1.str();
-			}
-			Integer number_of_inputs = 1;
-			if(i)
-			{
-				number_of_inputs = this->width[i-1];
-			}
-			this->network[i][j].load_from_file(
-				folder.c_str(), number_of_inputs);
+			this->neurons[i][j]
+			.read_from_bin_file(bin_file);
 		}
 	}
 }
 
-// overwrite_constrainer_function
-void
-Neural_Network::overwrite_constrainer_function(Real (*foo)(Real),
-					       Real (*dvt)(Real))
+// Neural_Network destructor
+Neural_Network::~Neural_Network()
 {
-	this->constrainer = foo;
-	this->constrainer_derivative = dvt;
+	for(Index_t i = 0; i < this->depth; i++)
+	{
+		delete [] this->neurons[i];
+	}
+	delete [] this->neurons;
+
+	this->depth = (Index_t) 0;
+	delete [] this->width;
 }
 
+// init
 void
-Neural_Network::print_all_neurons(void)
+Neural_Network::init(Index_t d_depth, Index_t* d_width)
 {
-	for(Integer i = 0; i < this->depth; i++)
+	srand(time(0)); // RAMDOMNESS
+	this->last_fed   = (Index_t) 0;
+	this->learn_runs = (Index_t) 0;
+
+	this->depth = d_depth;
+
+	this->width = new Index_t[d_depth];
+	for(Index_t i = 0; i < d_depth; i++)
 	{
-		for(Integer j = 0; j < this->width[i]; j++)
+		this->width[i] = d_width[i];
+	}
+
+	this->neurons = new Neuron*[this->depth];
+	for(Index_t i = 0; i < this->depth; i++)
+	{
+		this->neurons[i] = new Neuron[this->width[i]];
+
+		Index_t inputs = (Index_t) 0;
+		if(i)
 		{
-			print_neuron(i,j);
-			std::cout << std::endl;
+			inputs = this->width[i - 1];
 		}
-	}
-}
-
-// print_neuron
-void
-Neural_Network::print_neuron(Integer layer, Integer position)
-{
-	std::cout << "Neuron at layer "
-		  << layer
-		  << " and position "
-		  << position
-		  << std::endl;
-
-	std::cout << "    Output: "
-		  << this->network[layer][position].out
-		  << std::endl;
-
-	std::cout << "    Bias: "
-		  << this->network[layer][position].bias
-		  << std::endl;
-
-	std::cout << "    Bias derivative : "
-		  << this->network[layer][position].bias_avg_dvt
-		  << std::endl;
-
-	std::cout << "    Weigths: { ";
-	Integer n_of_w = 1;
-	if(layer)
-	{
-		n_of_w = this->width[layer - 1];
-	}
-
-	for(int i = 0; i < n_of_w; i++)
-	{
-		std::cout << this->network[layer]
-			     [position].weigth[i]
-		 	  << " ";
-	}
-	std::cout << "}" << std::endl;
-
-	std::cout << "    Weigth derivatives: { ";
-	for(int i = 0; i < n_of_w; i++)
-	{
-		std::cout << this->network[layer]
-			     [position].weigth_avg_dvt[i]
-			  << " ";
-	}
-	std::cout << "}" << std::endl;
-
-	std::cout << "    Self Derivative: "
-		  << this->network[layer][position].self_dvt
-		  << std::endl;
-
-	std::cout << "    Back Derivative: "
-		  << this->network[layer][position].back_dvt
-		  << std::endl;
-}
-
-// print_state
-void
-Neural_Network::print_state(void)
-{
-	for(int i = 0; i < this->depth; i++)
-	{
-		for(int j = 0; j < this->width[i]; j++)
+		for(Index_t j = 0; j < this->width[i]; j++)
 		{
-			std::cout << this->network[i][j].out << " ";
+			this->neurons[i][j].setup(inputs);
 		}
-		std::cout << std::endl;
 	}
 }
 
 // run
 void
-Neural_Network::run(void)
+Neural_Network::run()
 {
-	this->last_fed = 0;
-	for(Integer i = 1; i < this->depth; i++)
+	this->last_fed = (Index_t) 0;
+
+	for(Index_t i = 0; i < this->depth - 1; i++)
 	{
-		for(Integer j = 0; j < this->width[i]; j++)
+		for(Index_t j = 0; j < this->width[i]; j++)
 		{
-			Real pre_constrain = (Real) 0;
-			for(Integer k = 0; k < this->width[i - 1]; k++)
+			if(i)
 			{
-				pre_constrain +=
-				this->network[i][j].weigth[k] *
-				this->network[i - 1][k].out;
+				this->neurons[i][j].activate();
+				// this->print_neuron(i,j);
 			}
-			pre_constrain += this->network[i][j].bias;
-			this->network[i][j].self_dvt =
-			this->constrainer_derivative(pre_constrain);
-			this->network[i][j].out =
-			this->constrainer(pre_constrain);
+			for(Index_t k = 0; k< this->width[i+1]; k++)
+			{
+				// std::cout << "Entered when i = "
+				// 	  << i
+				// 	  << " and j = "
+				// 	  << j
+				// 	  << ", my output was: "
+				// 	  << this->neurons[i][j].out
+				// 	  << std::endl;
+				this->neurons[i+1][k].feed(
+					this->neurons[i][j].out);
+			}
 		}
+		// this->print_state(); // TEMPORARY
 	}
 
-	for(Integer i = 0; i < this->width[this->depth - 1]; i++)
+	for(Index_t i = 0; i < this->width[this->depth - 1]; i++)
 	{
-		results[i] = this->network[this->depth - 1][i].out;
+		this->neurons[this->depth - 1][i].activate();
+	}
+	// this->print_state(); // TEMPORARY
+}
+
+// feed
+void
+Neural_Network::feed(Out_t input)
+{
+	if(this->last_fed < this->width[0])
+	{
+		this->neurons[0][this->last_fed].out = input;
+		this->last_fed++;
 	}
 }
 
-// save_network
+// feed_run
 void
-Neural_Network::save_network(const char* folder_address)
+Neural_Network::feed_run(Out_t input)
 {
-	// Saving each neuron setting
-	for(Integer i = 1; i < this->depth; i++)
+	if(this->last_fed < this->width[0])
 	{
-		for(Integer j = 0; j < this->width[i]; j++)
+		this->neurons[0][this->last_fed].out = input;
+		this->last_fed++;
+		if(this->last_fed = this->width[0])
 		{
-			std::string folder(folder_address);
-			{
-				std::ostringstream str1;
-				str1 << "nl"
-				     << i
-				     << "p"
-				     << j;
-				folder += str1.str();
-			}
-			Integer number_of_inputs = 1;
-			if(i)
-			{
-				number_of_inputs = this->width[i-1];
-			}
-			this->network[i][j].save_in_file(
-				folder.c_str(), number_of_inputs);
+			this->last_fed = 0;
+			this->run();
 		}
-	}
-
-	// Saving configurations
-	std::string conf_file_name(folder_address);
-	conf_file_name += "neural_settings.config";
-	std::ofstream conf_file(conf_file_name.c_str());
-	if(conf_file.is_open())
-	{
-		conf_file << this->depth << " ";
-		for(int i = 0; i < this->depth; i++)
-		{
-			conf_file << this->width[i] << " ";
-		}
-		conf_file << folder_address << '\\';
-
-		conf_file.close();
 	}
 	else
 	{
-		// Error opening file
+		this->last_fed = (Index_t) 0;
+		this->neurons[0][0].out = input;
+		this->run();
 	}
-
 }
 
-// set_weight_at_neuron
-void
-Neural_Network::set_weight_at_neuron(Integer	layer,
-		     		     Integer	position,
-		     	   	     Real	def_weight[],
-			     	     Real	def_bias)
+// results
+Out_t
+Neural_Network::results(Index_t position)
 {
-	Integer neuron_inputs = 1;
-	if(layer)
+	if(position >= 0 && position < this->width[this->depth - 1])
 	{
-		neuron_inputs = this->width[layer - 1];
+		return this->neurons[this->depth - 1][position].out;
 	}
-	std::memcpy(this->network[layer][position].weigth,
-		    def_weight,
-	    	    neuron_inputs*sizeof(Real));
-	this->network[layer][position].bias = def_bias;
+	return (Out_t) 0;
 }
 
-void
-Neural_Network::update_neurons(void)
+// learn
+Real_t
+Neural_Network::learn(Out_t input_array[], Out_t output_array[])
 {
-	// this->print_all_neurons();
-	this->learn_runs = (Integer) 0;
-	for(Integer i = 1; i < this->depth; i++)
+	this->last_fed = 0;
+	for(Index_t i = 0; i < this->width[0]; i++)
 	{
-		for(Integer j = 0; j < this->width[i]; j++)
+		this->feed(input_array[i]);
+	}
+	run();
+
+	Real_t total_error = (Real_t) 0;
+	for(Index_t i = 0; i < this->width[this->depth - 1]; i++)
+	{
+		Real_t neuron_error;
+		neuron_error  = this->neurons[this->depth-1][i].out;
+		neuron_error -= output_array[i];
+
+		this->neurons[this->depth-1][i].back_dvt +=
+			neuron_error;
+
+		total_error += neuron_error*neuron_error;
+	}
+	total_error /= 2.0;
+
+	for(Index_t i = this->depth - 1; i > 0; i--)
+	{
+		for(Index_t j = 0; j < this->width[i]; j++)
 		{
-			this->network[i][j]
-			.update(this->width[i - 1]);
+			if(i != 1)
+			{
+				for(Index_t k = 0;
+				    k < this->width[i-1];
+				    k++)
+				{
+					this->neurons[i-1][k]
+						.back_dvt +=
+					this->neurons[i][j]
+						.transfer_dvt(k);
+				}
+			}
+			this->neurons[i][j]
+			.update_dvt(this->learn_runs);
+			this->neurons[i][j].deactivate();
 		}
 	}
+
+	this->learn_runs++;
+	return total_error;
+}
+
+// update_network
+void
+Neural_Network::update_network()
+{
+	this->learn_runs = (Index_t) 0;
+	for(Index_t i = 0; i < this->depth; i++)
+	{
+		for(Index_t j = 0; j < this->width[i]; j++)
+		{
+			this->neurons[i][j].update_parameters();
+		}
+	}
+}
+
+// save
+void
+Neural_Network::save(const char file_name[])
+{
+	std::ofstream bin_file;
+	bin_file.open(file_name, std::ios::binary | std::ios::out);
+	if(!bin_file.is_open())
+	{
+		return;
+	}
+
+	// Writing the size of the typedefs in file
+	{
+		// Index_t type size
+		char type_size = sizeof(Index_t);
+		bin_file.write(&type_size, sizeof(char));
+
+		// Real_t type size
+		type_size = sizeof(Real_t);
+		bin_file.write(&type_size, sizeof(char));
+
+		// Out_t type size
+		type_size = sizeof(Out_t);
+		bin_file.write(&type_size, sizeof(char));
+	}
+
+	// Writing the depth and width parameters;
+	bin_file.write(
+		reinterpret_cast<const char *>(&(this->depth)),
+	 	sizeof(Index_t));
+	bin_file.write(reinterpret_cast<const char *>(this->width),
+		       this->depth * sizeof(Index_t));
+
+	for(Index_t i = 0; i < this->depth; i++)
+	{
+		for(Index_t j = 0; j < this->width[i]; j++)
+		{
+			this->neurons[i][j]
+			.write_in_bin_file(bin_file);
+		}
+	}
+	bin_file.close();
+
+}
+
+// TEMPORARY
+
+using namespace std;
+
+void
+Neural_Network::print_state()
+{
+	for(Index_t i = 0; i < this->depth; i++)
+	{
+		for(Index_t j = 0; j < this->width[i]; j++)
+		{
+			cout << this->neurons[i][j].out << " ";
+		}
+		cout << endl;
+	}
+	cout << endl;
+}
+
+void
+Neural_Network::print_neuron(Index_t lay, Index_t pos)
+{
+	cout << "Neuron at layer "
+	     << lay
+	     << " and position "
+	     << pos
+	     << endl
+	     << endl;
+
+	this->neurons[lay][pos].print_me();
+}
+
+void
+Neural_Network::Neuron::print_me()
+{
+	cout << "Output: " << this->out << endl;
+
+	cout << "Inputs: { ";
+	for(Index_t i = 0; i < this->in_size; i++)
+	{
+		cout << this->in[i] << " ";
+	}
+	cout << "}" << endl;
+
+	cout << "Weights: { ";
+	for(Index_t i = 0; i < this->in_size; i++)
+	{
+		cout << this->weight[i] << " ";
+	}
+	cout << "}" << endl;
+
+	cout << "Weight derivatives: { ";
+	for(Index_t i = 0; i < this->in_size; i++)
+	{
+		cout << this->weight_dvt[i] << " ";
+	}
+	cout << "}" << endl;
+
+	cout << "Bias: " << this->bias << endl;
+	cout << "Bias derivative: " << this->bias_dvt << endl;
+	cout << "Self derivative: " << this->self_dvt << endl;
+	cout << "Back derivative: " << this->back_dvt << endl;
 }

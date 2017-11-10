@@ -1,120 +1,104 @@
 #ifndef ANN_H
 #define ANN_H
+#include<cstdlib>
+#include<ctime>
 
 #include <new> // Operator new[]
-#include <cstring> // memcpy
-#include <string> // string class
-#include <sstream> // For string stream
-#include <iostream> // cin and cout
-#include <fstream> // reading and writing from and to files
-#include <cmath> // For expsig
+#include <cmath> // exp
+#include <fstream> // FILE MANAGING
+#include <iostream> // TEMPORARY cout and cin
 
-typedef int 	Integer;
-typedef	float 	Real;
+// Will be used for indexes (such as network depth)
+typedef int   Index_t;
+// Used for internal parameters (weights, biases and derivatives)
+typedef float Real_t;
+// The outṕut type for the neuron
+typedef float Out_t;
 
 namespace
 {
-	Real 	sig(Real argument);
-	Real 	sig_dvt(Real argument);
-	Real 	weigth_initializer(void);
-	Real 	bias_initialzer(void);
-	Real 	out_initializer(void);
+	// Control variables
+	static const Real_t scalar_step = (Real_t) 1.0;
+	static const Out_t  min_out = (Out_t) 0.0;
+	static const Out_t  max_out = (Out_t) 1.0;
+
+
+	Out_t  sig(Real_t pre_constrain);
+	Real_t sig_dvt(Real_t pre_constrain);
+	Real_t weight_init();
 }
 
 class Neural_Network
 {
 private:
-	// Nested structural class Neuron
 	class Neuron
 	{
+	private:
+		Real_t*	weight;
+		Real_t*	weight_dvt;
+
+		Real_t 	bias;
+		Real_t	bias_dvt;
+
+		Index_t	in_size;
+		Index_t ready_in;
+		Out_t*	in;
 	public:
-		// The [0,1] output of the neuron
-		Real	out;
-		// The weigths of each input
-		Real*	weigth;
-		// The avarage request of change for each weigths
-		Real* 	weigth_avg_dvt;
-		// The neuron bias
-		Real	bias;
-		// The neuron average change request
-		Real	bias_avg_dvt;
-		// The neuron self derivative
-		Real 	self_dvt;
-		// The neuron back propagation derivative
-		Real	back_dvt;
+		Out_t	out;
+		Real_t	self_dvt;
+		Real_t	back_dvt;
 
 		Neuron();
 		~Neuron();
+		void   setup(Index_t inputs);
 
-		void load_from_file(const char* file_name,
-				    Integer number_of_inputs);
-		void save_in_file(const char* file_name,
-				  Integer number_of_inputs);
-		void set_number_of_inputs(const Integer inputs);
-		void update(Integer inputs);
+		void   activate();
+		void   deactivate();
+
+		void   feed(Out_t input);
+		void   feed_run(Out_t input);
+
+		void   update_dvt(Index_t current_runs);
+		Real_t transfer_dvt(Index_t back_layer_position);
+
+		void   update_parameters();
+
+		void   print_me(); // TEMPORARY
+
+		// FILE MANAGING
+		void   write_in_bin_file(std::ofstream& file);
+		void   read_from_bin_file(std::ifstream& file);
+
 	};
 
-	/* Holds the depth (how many layers) the network has.
-	 * Note that depth has to be at least 2, because of the
-	 * input and the output layer.
-	 */
-	Integer		depth;
-	// An array that hold how large is each layer
-	Integer*	width;
-	// Last element of the entry layer
-	Integer		last_fed;
-	// The number of learn runs done from last update
-	Integer		learn_runs;
-	// The matricial system that holds the neurons
-	Neuron**	network;
-	// The constrainer function to set the values to [0,1]
-	Real		(*constrainer)(Real);
-	// The constrainer derivative FUNCTIONS
-	Real		(*constrainer_derivative)(Real);
+	Index_t		depth;
+	Index_t*	width;
 
-	void load_network(const char* folder_address);
+	Index_t		last_fed;
 
-	void set_weight_at_neuron(Integer 	layer,
-				  Integer	position,
-				  Real		def_weight[],
-			  	  Real 		def_bias);
+	Index_t		learn_runs;
 
+	Neuron**	neurons;
+
+	void   init(Index_t d_depth, Index_t* d_width);
 public:
-	// The results of the last layer
-	Real*		results;
+	Neural_Network(Index_t d_depth, Index_t* d_width);
+	Neural_Network(const char file_name[]);
+	~Neural_Network();
 
-	Neural_Network(const char*	config_file);
-	Neural_Network(const Integer	def_depth,
-		       const Integer 	def_width[]);
+	void   run();
+	void   feed(Out_t input);
+	void   feed_run(Out_t input);
 
-        //~Neural_Network();
+	Out_t  results(Index_t position);
 
-	void clear(void);
+	Real_t learn(Out_t input_array[], Out_t output_array[]);
+	void   update_network();
 
-	void feed(Real entry);
+	void   print_state(); // TEMPORARY
+	void   print_neuron(Index_t lay, Index_t pos); // TEMPORARY
 
-	void feed_forward(Real entry);
-
-	void forward(void);
-
-	Real learn(Real input_array[], Real desired_output[]);
-
-	void overwrite_constrainer_function(Real (*foo)(Real),
-					    Real (*dvt)(Real));
-
-	void print_all_neurons(void);
-
-	void print_neuron(Integer layer, Integer position);
-
-	void print_state(void);
-
-	void run(void);
-
-	void save_network(const char* folder_address);
-
-	void update_neurons(void);
-
+	void   save(const char file_name[]); // FILE MANAGING
 };
-
 
 #endif // ANN_H

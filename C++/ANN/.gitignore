@@ -1,2 +1,3 @@
-/bin/*
-/obj/*
+./bin/*
+./obj/*
+./plot_data/*
